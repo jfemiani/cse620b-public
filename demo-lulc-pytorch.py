@@ -178,5 +178,185 @@ def evaluate_classification(model, name, test_preds=None):
     plt.title('Predicted Labels')
     plt.axis('off')
 
+
+
+# %% [markdown]
+# # MLP in Pytorch 
+
+# %%
+# #%conda install -y pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+
+# %%
+import torch
+print(torch.cuda.is_available())
+
+# %%
+#  Create a LandClassificationDataset class
+from torch.utils.data import Dataset, DataLoader
+
+class LandCoverDataset(Dataset):
     
-evaluate_classification(knn_model, 'KNN', test_preds=y_pred_knn) # Takes a minute to run
+    def __init__(self, X, y):
+        self.pixels = X
+        self.labels = y
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx):
+        return torch.tensor(self.pixels[idx], dtype=torch.float32), torch.tensor(self.labels[idx], dtype=torch.long)
+
+
+
+# %%
+train_dataset = LandCoverDataset(X_train, y_train)
+test_dataset = LandCoverDataset(X_test, y_test)
+
+# %%
+train_dataset[100]
+
+# %%
+
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
+
+
+# %%
+minibatch = next(iter(train_loader))
+
+minibatch[0].shape, minibatch[1].shape
+
+# %% [markdown]
+# # MLP Module
+
+# %%
+from torch import nn
+import torch.nn.functional as F
+
+class MLP(nn.Module):
+    def __init__(self, input_size, hidden_size, num_classes):
+        super(MLP, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, num_classes)
+
+    def forward(self, x):
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+
+# %%
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+input_size = 3 
+hidden_size = 64
+num_classes = len(label_names)
+
+model = MLP(input_size=input_size, hidden_size=hidden_size, num_classes=num_classes).to(device)
+model
+
+# %%
+preds= model(minibatch[0].to(device))
+preds.shape
+
+# %%
+from torch import optim
+
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+criterion = nn.CrossEntropyLoss()
+
+# %% [markdown]
+# ### Training Loop (one Epoch)
+#
+
+# %%
+import tqdm.auto as tq
+
+def train_model(model, train_loader, optimizer, criterion, device):
+    model.train()
+    for pixels, labels in tq.tqdm(train_loader, desc="Training", leave=False):
+        pixels, labels = pixels.to(device), labels.to(device)
+
+        # shape: (BS, C) = (64, 3)
+        
+        # Forward pass
+        outputs = model(pixels)  # shape (BS, num_classes)
+
+        loss = criterion(outputs, labels)
+        
+        # Backward pass and optimization
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+    return loss.item()
+
+
+
+# %%
+train_model(model, train_loader, optimizer, criterion, device)
+
+
+# %% [markdown]
+# ### Evaluation Loop
+
+# %%
+def evaluate_model(model, test_loader, criterion, device):
+    model.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for pixels, labels in tq.tqdm(test_loader, desc='Eval', leave=False):
+            pixels, labels = pixels.to(device), labels.to(device)
+            
+            outputs = model(pixels)
+            _, predicted = torch.max(outputs, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    
+    accuracy = correct / total
+    return accuracy
+
+
+# %%
+evaluate_model(model, test_loader, criterion, device)
+
+# %% [markdown]
+# ### Training and Evaluation Loop
+
+# %%
+num_epochs = 20
+for epoch in range(num_epochs):
+    train_loss = train_model(model, train_loader, optimizer, criterion, device)
+    test_accuracy = evaluate_model(model, test_loader, criterion, device)
+    
+    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {train_loss:.4f}, Accuracy: {test_accuracy*100:.2f}%')
+
+
+# %% [markdown]
+# ### Visualizing the Results
+
+# %%
+model.eval()
+with torch.no_grad():
+    image_tensor = torch.tensor(image.reshape(-1, image.shape[2]), dtype=torch.float32).to(device)
+    
+    preds = model(image_tensor)
+    
+    _, predicted = torch.max(preds, 1)
+    predicted = predicted.cpu().numpy().reshape(image.shape[:2])
+
+# %%
+plt.figure(figsize=(10,4))
+plt.subplot(121)
+plt.imshow(labels_rgb)
+plt.title('True Labels')
+plt.axis('off')
+
+plt.subplot(122)
+plt.imshow(label_colors[predicted])
+plt.title('Predicted Labels')
+plt.axis('off')
+plt.show()
