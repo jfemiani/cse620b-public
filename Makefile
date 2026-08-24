@@ -5,15 +5,20 @@
 # Only files with a known, reproducible private-repo source get a build rule;
 # see the "no rebuild rule" note below for the rest.
 
-FILES=Lessons/01-Introduction-to-GIS-and-Python/pdf/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf
+FILES=Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf
+FILES+=Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS.pdf
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb
 
 all: ${FILES}
 
-Lessons/01-Introduction-to-GIS-and-Python/pdf/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf: ../cse620b/Lessons/01-Introduction-to-GIS-and-Python/pdf/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf
-	mkdir -p Lessons/01-Introduction-to-GIS-and-Python/pdf
+Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf: ../cse620b/Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf
+	mkdir -p Lessons/01-Introduction-to-GIS-and-Python/slides
+	cp $< $@
+
+Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS.pdf: ../cse620b/Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS.pdf
+	mkdir -p Lessons/01-Introduction-to-GIS-and-Python/slides
 	cp $< $@
 
 Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb: ../cse620b/Lessons/IRS-Chapter-6-Slides/demo-lulc.ipynb
