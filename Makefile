@@ -12,6 +12,8 @@ FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
+FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html
+FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.html
 
 all: ${FILES}
 
@@ -42,6 +44,14 @@ Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb: ../cse
 Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb: ../cse620b/Demos/demo-vector-data-osm.ipynb
 	mkdir -p Lessons/01-Introduction-to-GIS-and-Python
 	cp $< $@
+
+# Rendered HTML for embedding via iframe on Canvas pages (nbconvert
+# --embed-images produces a single self-contained file, no external assets).
+Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html: Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb
+	jupyter nbconvert --to html --embed-images $<
+
+Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.html: Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
+	jupyter nbconvert --to html --embed-images $<
 
 # No rebuild rule yet (only a .md source exists privately, not a built PDF/PPTX):
 #   Lessons/07-Microwave-Lidar-and-Thermal-Remote-Sensing/pdf/clouds.pdf
