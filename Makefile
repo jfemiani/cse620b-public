@@ -10,6 +10,8 @@ FILES+=Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Dat
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb
+FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb
+FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
 
 all: ${FILES}
 
@@ -31,6 +33,14 @@ Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py: ../cse620b/
 
 Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb: ../cse620b/Lessons/IRS-Chapter-6-Slides/demo-deepglobe.ipynb
 	mkdir -p Lessons/06-Image-Classification-and-Land-Cover
+	cp $< $@
+
+Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb: ../cse620b/Demos/demo-raster-data-pgd-ch3.ipynb
+	mkdir -p Lessons/01-Introduction-to-GIS-and-Python
+	cp $< $@
+
+Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb: ../cse620b/Demos/demo-vector-data-osm.ipynb
+	mkdir -p Lessons/01-Introduction-to-GIS-and-Python
 	cp $< $@
 
 # No rebuild rule yet (only a .md source exists privately, not a built PDF/PPTX):
