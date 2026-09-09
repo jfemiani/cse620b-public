@@ -113,6 +113,24 @@ after CSE 534 but are course-agnostic in what they actually do):
 - No conda/Python environment is documented yet for this repo. If demos here
   need one, record the setup in `README.md` once established.
 
+## Canvas Quiz Attempt Policy (Operational Default)
+
+When configuring existing Canvas quizzes for this course, use:
+- `allowed_attempts = -1` (unlimited attempts)
+- `scoring_policy = keep_highest`
+
+Use the skill script:
+
+```bash
+conda run -n cse434 dotenv run -- python3 ~/.copilot/skills/cse534-page-template/configure_quiz_attempts.py --all
+conda run -n cse434 dotenv run -- python3 ~/.copilot/skills/cse534-page-template/configure_quiz_attempts.py --all --apply
+```
+
+Notes:
+- First command is dry run preview.
+- Second command applies updates to all quizzes in `CANVAS_COURSE_ID`.
+- Do not set fixed attempt counts unless explicitly requested by the instructor.
+
 ## General workflow rules
 
 - Never commit anything containing correct-answer flags, quiz feedback

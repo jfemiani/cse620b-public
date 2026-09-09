@@ -10,6 +10,7 @@ FILES+=Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Dat
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb
+FILES+=Lessons/03-Optical-Radiation-and-the-EM-Spectrum/slides/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html
@@ -35,6 +36,10 @@ Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py: ../cse620b/
 
 Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb: ../cse620b/Lessons/IRS-Chapter-6-Slides/demo-deepglobe.ipynb
 	mkdir -p Lessons/06-Image-Classification-and-Land-Cover
+	cp $< $@
+
+Lessons/03-Optical-Radiation-and-the-EM-Spectrum/slides/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf: ../cse620b/Lessons/03-Optical-Radiation-and-the-EM-Spectrum/beamer/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf
+	mkdir -p Lessons/03-Optical-Radiation-and-the-EM-Spectrum/slides
 	cp $< $@
 
 Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb: ../cse620b/Demos/demo-raster-data-pgd-ch3.ipynb
