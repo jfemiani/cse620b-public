@@ -11,6 +11,8 @@ FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb
 FILES+=Lessons/03-Optical-Radiation-and-the-EM-Spectrum/slides/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf
+FILES+=Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides/IRS-Chapter-3-Remote-Sensing-Platforms-beamer.pdf
+FILES+=Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides/IRS-Chapter-4-Digital-Mapping-Cameras-beamer.pdf
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html
@@ -40,6 +42,14 @@ Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb: ../cse620b/
 
 Lessons/03-Optical-Radiation-and-the-EM-Spectrum/slides/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf: ../cse620b/Lessons/03-Optical-Radiation-and-the-EM-Spectrum/beamer/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf
 	mkdir -p Lessons/03-Optical-Radiation-and-the-EM-Spectrum/slides
+	cp $< $@
+
+Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides/IRS-Chapter-3-Remote-Sensing-Platforms-beamer.pdf: ../cse620b/Lessons/04-Remote-Sensing-Platforms-and-Cameras/platforms/beamer/IRS-Chapter-3-Remote-Sensing-Platforms-beamer.pdf
+	mkdir -p Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides
+	cp $< $@
+
+Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides/IRS-Chapter-4-Digital-Mapping-Cameras-beamer.pdf: ../cse620b/Lessons/04-Remote-Sensing-Platforms-and-Cameras/cameras/beamer/IRS-Chapter-4-Digital-Mapping-Cameras-beamer.pdf
+	mkdir -p Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides
 	cp $< $@
 
 Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb: ../cse620b/Demos/demo-raster-data-pgd-ch3.ipynb
