@@ -3,11 +3,12 @@
 #   jupytext:
 #     cell_metadata_filter: -all
 #     custom_cell_magics: kql
+#     formats: ipynb,py:percent
 #     text_representation:
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.2
+#       jupytext_version: 1.17.2
 #   kernelspec:
 #     display_name: cse620b-shared
 #     language: python
@@ -25,8 +26,6 @@ from sklearn.model_selection import train_test_split
 
 # %%
 # Define paths
-# image_path = '/data/cse620b/ch12-data/C-megacities/Image__8bit_NirRGB/GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2.tif'
-# label_path = '/data/cse620b/ch12-data/C-megacities/label_dense__color/GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2_dense.tif'
 image_path =  'GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2.tif'
 label_path = 'GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2_dense.tif'
 
@@ -181,7 +180,10 @@ def evaluate_classification(model, name, test_preds=None):
 
 
 # %% [markdown]
-# # MLP in Pytorch 
+# # Land-Cover Classification with a PyTorch MLP
+#
+# This is a code-only MLP walkthrough. It has not been run in this repository;
+# the source raster files are not included.
 
 # %%
 # #%conda install -y pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
