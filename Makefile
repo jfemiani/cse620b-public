@@ -9,6 +9,20 @@ FILES=Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-1-GIS-Overview-an
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS.pdf
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-knn.ipynb
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-kmeans.ipynb
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-naive-bayes.ipynb
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-decision-tree.ipynb
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-random-forest.ipynb
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-gradient-boosting.ipynb
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-mlp.ipynb
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-knn.slides.html
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-kmeans.slides.html
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-naive-bayes.slides.html
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-decision-tree.slides.html
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-random-forest.slides.html
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-gradient-boosting.slides.html
+FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-mlp.slides.html
 FILES+=Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb
 FILES+=Lessons/03-Optical-Radiation-and-the-EM-Spectrum/slides/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf
 FILES+=Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides/IRS-Chapter-3-Remote-Sensing-Platforms-beamer.pdf
@@ -31,6 +45,13 @@ Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Data-Types
 Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb: ../cse620b/Lessons/IRS-Chapter-6-Slides/demo-lulc.ipynb
 	mkdir -p Lessons/06-Image-Classification-and-Land-Cover
 	cp $< $@
+
+Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-%.ipynb: Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-%.py
+	jupytext --to ipynb $<
+	python -c 'import json; from pathlib import Path; path = Path("$@"); notebook = json.loads(path.read_text()); [cell["metadata"].__setitem__("language", "python" if cell["cell_type"] == "code" else "markdown") for cell in notebook["cells"]]; path.write_text(json.dumps(notebook, indent=1, ensure_ascii=False) + "\n")'
+
+Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-%.slides.html: Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-%.ipynb
+	jupyter nbconvert --to slides --output-dir "$(dir $@)" --output "$(basename $(basename $(notdir $@)))" $<
 
 Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py: ../cse620b/Lessons/IRS-Chapter-6-Slides/demo-lulc-pytorch.py
 	mkdir -p Lessons/06-Image-Classification-and-Land-Cover

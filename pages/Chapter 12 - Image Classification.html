@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Chapter 12 - Image Classification</title>
+</head>
+<body>
+  <h1>Chapter 12 - Image Classification</h1>
+  <p>This lesson connects spectral and informational classes with unsupervised clustering, supervised classification, and neural-network approaches to land-cover mapping.</p>
+
+  <h2 class="content-box pad-box-mini" style="background-color: #941728; color: #ffffff;">Lecture Slides</h2>
+  <ul>
+    <li><a href="https://miamioh.instructure.com/courses/255798/files/40678516/download" target="_blank" rel="noopener">Unsupervised classification and clustering</a></li>
+    <li><a href="https://miamioh.instructure.com/courses/255798/files/40678517/download" target="_blank" rel="noopener">Supervised classification</a></li>
+    <li><a href="https://miamioh.instructure.com/courses/255798/files/40678518/download" target="_blank" rel="noopener">Random forests, k-nearest neighbors, and neural networks</a></li>
+    <li><a href="https://miamioh.instructure.com/courses/255798/files/40678519/download" target="_blank" rel="noopener">Geometric and probabilistic decision rules</a></li>
+  </ul>
+
+  <h2 class="content-box pad-box-mini" style="background-color: #941728; color: #ffffff;">Open a Notebook in Colab</h2>
+  <ul>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb" target="_blank" rel="noopener">Land-cover classification comparison with scikit-learn</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-knn.ipynb" target="_blank" rel="noopener">K-nearest neighbors</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-kmeans.ipynb" target="_blank" rel="noopener">K-means clustering</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-naive-bayes.ipynb" target="_blank" rel="noopener">Gaussian Naive Bayes</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-decision-tree.ipynb" target="_blank" rel="noopener">Decision tree</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-random-forest.ipynb" target="_blank" rel="noopener">Random forest</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-gradient-boosting.ipynb" target="_blank" rel="noopener">Gradient boosting</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-mlp.ipynb" target="_blank" rel="noopener">Scikit-learn MLP</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.ipynb" target="_blank" rel="noopener">Land-cover classification with PyTorch</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb" target="_blank" rel="noopener">DeepGlobe land-cover segmentation with PyTorch</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe-deeplabv3.ipynb" target="_blank" rel="noopener">DeepGlobe segmentation with pretrained DeepLabV3</a></li>
+    <li><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe-dinov2.ipynb" target="_blank" rel="noopener">DeepGlobe segmentation with fine-tuned DINOv2</a></li>
+  </ul>
+
+  <h2 class="content-box pad-box-mini" style="background-color: #941728; color: #ffffff;">LULC Slides</h2>
+  <ul>
+    <li><a href="https://htmlpreview.github.io/?https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-knn.slides.html" target="_blank" rel="noopener">K-nearest neighbors slides</a></li>
+    <li><a href="https://htmlpreview.github.io/?https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-kmeans.slides.html" target="_blank" rel="noopener">K-means clustering slides</a></li>
+    <li><a href="https://htmlpreview.github.io/?https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-naive-bayes.slides.html" target="_blank" rel="noopener">Gaussian Naive Bayes slides</a></li>
+    <li><a href="https://htmlpreview.github.io/?https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-decision-tree.slides.html" target="_blank" rel="noopener">Decision tree slides</a></li>
+    <li><a href="https://htmlpreview.github.io/?https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-random-forest.slides.html" target="_blank" rel="noopener">Random forest slides</a></li>
+    <li><a href="https://htmlpreview.github.io/?https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-gradient-boosting.slides.html" target="_blank" rel="noopener">Gradient boosting slides</a></li>
+    <li><a href="https://htmlpreview.github.io/?https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-mlp.slides.html" target="_blank" rel="noopener">Scikit-learn MLP slides</a></li>
+  </ul>
+
+  <h2 class="content-box pad-box-mini" style="background-color: #941728; color: #ffffff;">Run the Data Demo Locally</h2>
+  <p>The scikit-learn and PyTorch pixel-classification notebooks use the GF1 image and label rasters on the course server. Replace <code>username</code> with your account name:</p>
+  <pre><code>sftp username@femianjc-gpu.csi.miamioh.edu:/srv/courses/cse620b/demo-lulc.ipynb
+sftp username@femianjc-gpu.csi.miamioh.edu:/data/cse620b/ch12-data/C-megacities/Image__8bit_NirRGB/GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2.tif
+sftp username@femianjc-gpu.csi.miamioh.edu:/data/cse620b/ch12-data/C-megacities/label_dense__color/GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2_dense.tif</code></pre>
+  <p>Run Jupyter locally and install the packages required by the notebook in your environment. The DeepGlobe notebook downloads its dataset from Hugging Face on first run.</p>
+</body>
+</html>
