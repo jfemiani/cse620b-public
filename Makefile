@@ -31,6 +31,16 @@ FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.html
+FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.py
+FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.ipynb
+FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.slides.html
+FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/pdf/irs-chapter-15-slides.pdf
+FILES+=Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.py
+FILES+=Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb
+FILES+=Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.slides.html
+FILES+=Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.1-14.4-Slides.pdf
+FILES+=Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.5-14.7-Slides.pdf
+FILES+=Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.8-14.10-Slides.pdf
 
 all: ${FILES}
 
@@ -88,6 +98,36 @@ Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html: Lessons
 
 Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.html: Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
 	jupyter nbconvert --to html --embed-images $<
+
+Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.ipynb: Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.py
+	jupytext --update --to ipynb $<
+	python -c 'import json; from pathlib import Path; path = Path("$@"); notebook = json.loads(path.read_text()); [cell["metadata"].__setitem__("language", "python" if cell["cell_type"] == "code" else "markdown") for cell in notebook["cells"]]; path.write_text(json.dumps(notebook, indent=1, ensure_ascii=False) + "\n")'
+
+Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.slides.html: Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.ipynb
+	jupyter nbconvert --to slides --output-dir "$(dir $@)" --output "$(basename $(basename $(notdir $@)))" $<
+
+Lessons/09-Change-Detection-and-Accuracy-Assessment/pdf/irs-chapter-15-slides.pdf: ../cse620b/Lessons/IRS-Chapter-15-Change-Detection/irs-chapter-15-slides.md
+	mkdir -p "$(dir $@)"
+	marp --pdf --allow-local-files --output "$@" $<
+
+Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb: Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.py
+	jupytext --update --to ipynb $<
+	python -c 'import json; from pathlib import Path; path = Path("$@"); notebook = json.loads(path.read_text()); [cell["metadata"].__setitem__("language", "python" if cell["cell_type"] == "code" else "markdown") for cell in notebook["cells"]]; path.write_text(json.dumps(notebook, indent=1, ensure_ascii=False) + "\n")'
+
+Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.slides.html: Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb
+	jupyter nbconvert --to slides --output-dir "$(dir $@)" --output "$(basename $(basename $(notdir $@)))" $<
+
+Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.1-14.4-Slides.pdf: ../cse620b/Lessons/IRS-Chapter-14-Slides/IRS-14.1-14.4-Slides.md
+	mkdir -p "$(dir $@)"
+	marp --pdf --allow-local-files --output "$@" $<
+
+Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.5-14.7-Slides.pdf: ../cse620b/Lessons/IRS-Chapter-14-Slides/IRS-14.5-14.7-Slides.md
+	mkdir -p "$(dir $@)"
+	marp --pdf --allow-local-files --output "$@" $<
+
+Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.8-14.10-Slides.pdf: ../cse620b/Lessons/IRS-Chapter-14-Slides/IRS-14.8-14.10-Slides.md
+	mkdir -p "$(dir $@)"
+	marp --pdf --allow-local-files --output "$@" $<
 
 # No rebuild rule yet (only a .md source exists privately, not a built PDF/PPTX):
 #   Lessons/07-Microwave-Lidar-and-Thermal-Remote-Sensing/pdf/clouds.pdf

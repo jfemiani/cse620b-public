@@ -1,0 +1,49 @@
+name: Publish Course Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: course-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install notebook build tools
+        run: python -m pip install jupytext nbconvert ipykernel numpy matplotlib rasterio
+      - name: Build notebook presentations
+        env:
+          MPLBACKEND: Agg
+        run: |
+          for source in \
+            Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.py \
+            Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.py
+          do
+            jupytext --update --to ipynb "$source"
+            notebook="${source%.py}.ipynb"
+            jupyter nbconvert --to slides --execute \
+              --ExecutePreprocessor.timeout=300 "$notebook"
+          done
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

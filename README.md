@@ -47,6 +47,10 @@ This course will cover advanced topics in computer vision with a focus on applic
 
 ### Week 10: Oct 29, 2024  
 
+- [Change Detection: slides and Colab demo](https://jfemiani.github.io/cse620b-public/pages/Week%2010%20-%20Change%20Detection.html)
+- [Advanced Hyperspectral Data Analysis: slides and Colab demo](https://jfemiani.github.io/cse620b-public/pages/Week%2010%20-%20Advanced%20Hyperspectral%20Data%20Analysis.html)
+- [Small Landsat image pair (GitHub Release)](https://github.com/jfemiani/cse620b-public/releases/tag/week10-data-v1)
+
 
 ### Week 11: Nov 5, 2024  
 
