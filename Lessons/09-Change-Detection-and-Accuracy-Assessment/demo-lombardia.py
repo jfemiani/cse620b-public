@@ -58,22 +58,24 @@ images = np.stack(images)
 rgb = np.clip(images[:, [2, 1, 0]].transpose(0, 2, 3, 1) / 0.3, 0, 1) ** 0.5
 
 # %% [markdown] {"id":"lombardia-sequence-text","language":"markdown","slideshow":{"slide_type":"slide"}}
-# ## Follow the same fields through the year
+# ## Follow the same fields through clear observations
 #
-# Every panel uses the same RGB stretch. Each chip covers 480 by 480 metres
-# on a 10 m grid; some original Sentinel-2 channels have coarser native resolution.
-# Trace one field's appearance across dates. Inspect haze and cloud contamination
-# alongside agricultural variation before selecting a pair for comparison.
+# Images 1, 2, 3, 6, 8, and 9 from the twelve-date list are the visually clear
+# observations. Every panel uses the same RGB stretch. Each chip covers 480 by
+# 480 metres on a 10 m grid; some Sentinel-2 channels have coarser native resolution.
 
 # %% {"id":"lombardia-sequence","language":"python","slideshow":{"slide_type":"slide"}}
-fig, axes = plt.subplots(3, 4, figsize=(12, 9), layout="constrained")
-for axis, date, frame in zip(axes.flat, dates, rgb):
+sequence_indices = [0, 1, 2, 5, 7, 8]
+sequence_dates = [dates[index] for index in sequence_indices]
+sequence_rgb = rgb[sequence_indices]
+fig, axes = plt.subplots(2, 3, figsize=(12, 8), layout="constrained")
+for axis, date, frame in zip(axes.flat, sequence_dates, sequence_rgb):
     axis.imshow(frame)
     axis.set_title(datetime.strptime(date, "%Y%m%d").strftime("%b %d, %Y"))
     axis.axis("off")
 fig.savefig(output_dir / "lombardia-sequence.png", dpi=150)
 plt.show()
-frames = [Image.fromarray(np.uint8(frame * 255)).resize((480, 480)) for frame in rgb]
+frames = [Image.fromarray(np.uint8(frame * 255)).resize((480, 480)) for frame in sequence_rgb]
 frames[0].save(output_dir / "lombardia-flicker.gif", save_all=True,
                append_images=frames[1:], duration=700, loop=0)
 
