@@ -31,11 +31,9 @@ FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html
 FILES+=Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.html
-FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.py
-FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.ipynb
-FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.slides.html
-FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-rondonia-ndvi.ipynb
-FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-rondonia-ndvi.slides.html
+FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.py
+FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.ipynb
+FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.slides.html
 FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/pdf/irs-chapter-15-slides.pdf
 FILES+=Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.py
 FILES+=Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb
@@ -101,19 +99,12 @@ Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html: Lessons
 Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.html: Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb
 	jupyter nbconvert --to html --embed-images $<
 
-Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.ipynb: Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.py
+Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.ipynb: Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.py
 	jupytext --update --to ipynb $<
 	python -c 'import json; from pathlib import Path; path = Path("$@"); notebook = json.loads(path.read_text()); [cell["metadata"].__setitem__("language", "python" if cell["cell_type"] == "code" else "markdown") for cell in notebook["cells"]]; path.write_text(json.dumps(notebook, indent=1, ensure_ascii=False) + "\n")'
 
-Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.slides.html: Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-change-detection.ipynb
-	jupyter nbconvert --to slides --output-dir "$(dir $@)" --output "$(basename $(basename $(notdir $@)))" $<
-
-Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-rondonia-ndvi.ipynb: Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-rondonia-ndvi.py
-	jupytext --update --to ipynb $<
-	python -c 'import json; from pathlib import Path; path = Path("$@"); notebook = json.loads(path.read_text()); [cell["metadata"].__setitem__("language", "python" if cell["cell_type"] == "code" else "markdown") for cell in notebook["cells"]]; path.write_text(json.dumps(notebook, indent=1, ensure_ascii=False) + "\n")'
-
-Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-rondonia-ndvi.slides.html: Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-rondonia-ndvi.ipynb
-	jupyter nbconvert --to slides $<
+Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.slides.html: Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.ipynb
+	jupyter nbconvert --to slides --execute $<
 
 Lessons/09-Change-Detection-and-Accuracy-Assessment/pdf/irs-chapter-15-slides.pdf: ../cse620b/Lessons/IRS-Chapter-15-Change-Detection/irs-chapter-15-slides.md
 	mkdir -p "$(dir $@)"
