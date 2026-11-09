@@ -41,6 +41,8 @@ jobs:
               --ExecutePreprocessor.timeout=300 "$notebook"
             grep -q 'data:image/png;base64' "${source%.py}.slides.html"
           done
+      - name: Build course home page
+        run: python scripts/build_course_index.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
