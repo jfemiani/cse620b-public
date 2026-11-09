@@ -38,9 +38,7 @@ FILES+=Lessons/09-Change-Detection-and-Accuracy-Assessment/pdf/irs-chapter-15-sl
 FILES+=Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.py
 FILES+=Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb
 FILES+=Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.slides.html
-FILES+=Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.1-14.4-Slides.pdf
-FILES+=Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.5-14.7-Slides.pdf
-FILES+=Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.8-14.10-Slides.pdf
+FILES+=Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-Chapter-14-Hyperspectral-Remote-Sensing.pdf
 
 all: ${FILES}
 
@@ -117,15 +115,7 @@ Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb: Lesso
 Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.slides.html: Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb
 	jupyter nbconvert --to slides --output-dir "$(dir $@)" --output "$(basename $(basename $(notdir $@)))" $<
 
-Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.1-14.4-Slides.pdf: ../cse620b/Lessons/IRS-Chapter-14-Slides/IRS-14.1-14.4-Slides.md
-	mkdir -p "$(dir $@)"
-	marp --pdf --allow-local-files --output "$@" $<
-
-Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.5-14.7-Slides.pdf: ../cse620b/Lessons/IRS-Chapter-14-Slides/IRS-14.5-14.7-Slides.md
-	mkdir -p "$(dir $@)"
-	marp --pdf --allow-local-files --output "$@" $<
-
-Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.8-14.10-Slides.pdf: ../cse620b/Lessons/IRS-Chapter-14-Slides/IRS-14.8-14.10-Slides.md
+Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-Chapter-14-Hyperspectral-Remote-Sensing.pdf: ../cse620b/Lessons/12-Week-10-Change-Detection-and-Advanced-Hyperspectral-Analysis/advanced-hyperspectral/slides/IRS-Chapter-14-Slides/IRS-Chapter-14-Hyperspectral-Remote-Sensing.md $(wildcard ../cse620b/Lessons/12-Week-10-Change-Detection-and-Advanced-Hyperspectral-Analysis/advanced-hyperspectral/slides/IRS-Chapter-14-Slides/images/*.png)
 	mkdir -p "$(dir $@)"
 	marp --pdf --allow-local-files --output "$@" $<
 
