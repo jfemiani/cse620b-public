@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../assets/notes.css">
+  <title>Change Detection</title>
+</head>
+<body>
+  <h1>Change Detection</h1>
+  <p>Compare bitemporal images, distinguish spectral change from acquisition effects, and interpret difference maps and change-vector magnitude.</p>
+  <h2>Lombardia image time series</h2>
+  <p>One Sentinel-2 agricultural patch on twelve dates in 2019. The notebook downloads tiny individual GeoTIFFs anonymously from the CC0 source dataset. Inspect RGB images for cloud and atmospheric effects alongside agricultural variation.</p>
+  <p><a href="../pages/change-detection.html#tab-2" target="_parent">Open the Lombardia demonstration</a> for the notebook, Colab link, downloads, and rendered slides.</p>
+  <h2>Lecture slides</h2>
+  <p><a href="../pages/change-detection.html#tab-1" target="_parent">View the slideshow</a> or <a href="../Lessons/09-Change-Detection-and-Accuracy-Assessment/pdf/irs-chapter-15-slides.pdf" download>download the lecture PDF</a>.</p>
+  <figure>
+    <img src="../Lessons/09-Change-Detection-and-Accuracy-Assessment/images/lombardia-flicker.gif" alt="Flicker comparison of the same Lombardia agricultural area on two dates.">
+    <figcaption>Compare the same agricultural area across dates.</figcaption>
+  </figure>
+  <figure>
+    <img src="../Lessons/09-Change-Detection-and-Accuracy-Assessment/images/lombardia-correlation.png" alt="Paired red-band values with a regression line and Pearson correlation.">
+    <figcaption>Paired red-band values, regression line, and Pearson correlation.</figcaption>
+  </figure>
+  <p><a href="https://www.kaggle.com/datasets/ignazio/sentinel2-crop-mapping">Source data: Gallo et al., Sentinel-2 Image Time Series for Crop Mapping (CC0)</a></p>
+</body>
+</html>

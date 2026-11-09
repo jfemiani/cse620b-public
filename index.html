@@ -3,213 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Course pages, lecture slides, and Colab notebooks for CSE 620B at Miami University.">
-  <title>CSE 620B | Computer Vision for Remote Sensing</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --red: #941728;
-      --ink: #242424;
-      --muted: #555;
-      --line: #dedede;
-      --panel: #f7f5f3;
-      --link: #075b85;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      background: #fff;
-      font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
-    }
-    a { color: var(--link); text-underline-offset: 3px; overflow-wrap: anywhere; }
-    a:focus-visible { outline: 3px solid #e6a700; outline-offset: 3px; }
-    .skip-link {
-      position: absolute;
-      top: -5rem;
-      left: 1rem;
-      z-index: 1;
-      padding: .5rem .75rem;
-      background: #fff;
-    }
-    .skip-link:focus { top: 1rem; }
-    header {
-      padding: 3rem max(1.25rem, calc((100% - 1100px) / 2));
-      color: #fff;
-      background: var(--red);
-    }
-    header p { max-width: 720px; margin: .75rem 0 0; }
-    .eyebrow { margin: 0; font-size: .9rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    h1 { max-width: 850px; margin: .5rem 0 0; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.15; }
-    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
-    h2 { margin: 2.5rem 0 1rem; color: var(--red); font-size: 1.6rem; line-height: 1.3; }
-    h3 { margin: 0; font-size: 1.25rem; line-height: 1.35; }
-    .notice, .quiz-note {
-      padding: 1rem 1.25rem;
-      border-left: 5px solid var(--red);
-      background: var(--panel);
-    }
-    .notice { margin: 0 0 2rem; }
-    .notice p, .quiz-note p { margin: 0; }
-    .page-list, .resource-list { margin: .8rem 0 0; padding-left: 1.25rem; }
-    .page-list li, .resource-list li { margin: .45rem 0; }
-    .module-list { display: grid; gap: 1rem; }
-    .module {
-      padding: 1.25rem;
-      border: 1px solid var(--line);
-      border-radius: .5rem;
-      background: #fff;
-    }
-    .resource-list { color: var(--muted); }
-    .resource-list a { font-weight: 600; }
-    footer {
-      padding: 1.5rem max(1.25rem, calc((100% - 1100px) / 2));
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: .95rem;
-    }
-    @media (min-width: 760px) {
-      .module-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-  </style>
+  <meta name="description" content="Explore geographic information systems and the raster and vector models used to represent spatial data.">
+  <title>GIS and Geospatial Data | CSE 620B</title>
+  <link rel="stylesheet" href="assets/course.css">
+  <script src="assets/course.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to course materials</a>
-  <header>
-    <p class="eyebrow">Miami University</p>
-    <h1>CSE 620B: Computer Vision for Remote Sensing</h1>
-    <p>Lecture pages, slides, and hands-on notebooks for exploring computer vision in remote sensing.</p>
+  <a class="skip-link" href="#main">Skip to topic</a>
+  <header class="course-header">
+    <a href="index.html"><strong>CSE 620B</strong><span>Computer Vision for Remote Sensing</span></a>
+    <p>Miami University</p>
   </header>
-  <main id="main">
-    <aside class="notice" aria-label="Course site information">
-      <p><strong>Read-only course resource site.</strong> This site does not collect assignment submissions or quiz attempts. Use Canvas when coursework must be submitted.</p>
+  <div class="course-layout">
+    <aside class="sidebar">
+      <h2>Topics</h2>
+      <nav aria-label="Course topics"><a href="pages/gis-and-geospatial-data.html" aria-current="page">GIS and Geospatial Data</a><a href="pages/python-for-gis.html">Python for GIS</a><a href="pages/optical-radiation.html">Optical Radiation and the EM Spectrum</a><a href="pages/platforms-and-cameras.html">Remote Sensing Platforms and Cameras</a><a href="pages/image-classification.html">Image Classification and Land Cover</a><a href="pages/microwave-lidar-and-thermal.html">Microwave, Lidar, and Thermal Sensing</a><a href="pages/change-detection.html">Change Detection</a><a href="pages/hyperspectral-analysis.html">Hyperspectral Data Analysis</a><a href="pages/forestry-and-vegetation.html">Forestry and Vegetation</a></nav>
+      <p class="site-note">Course materials only.<br>No submissions or grades.</p>
     </aside>
-    <section aria-labelledby="course-pages-heading">
-      <h2 id="course-pages-heading">Course pages</h2>
-      <p>Student-facing lesson pages, including the course content maintained for Canvas.</p>
-      <ul class="page-list">
-        <li><a href="pages/1.%20GIS%20Overview%20and%20Geospatial%20Data%20Types.html">1. GIS Overview and Geospatial Data Types</a></li>
-        <li><a href="pages/2.%20Geospatial%20Data%20Types%20and%20Python%20for%20GIS.html">2. Geospatial Data Types and Python for GIS</a></li>
-        <li><a href="pages/3.%20Optical%20Radiation%20and%20the%20EM%20Spectrum.html">3. Optical Radiation and the EM Spectrum</a></li>
-        <li><a href="pages/Chapter%2012%20-%20Image%20Classification.html">Chapter 12 - Image Classification</a></li>
-        <li><a href="pages/Week%2010%20-%20Advanced%20Hyperspectral%20Data%20Analysis.html">Week 10 - Advanced Hyperspectral Data Analysis</a></li>
-        <li><a href="pages/Week%2010%20-%20Change%20Detection.html">Week 10 - Change Detection</a></li>
-      </ul>
-    </section>
-    <section aria-labelledby="materials-heading">
-      <h2 id="materials-heading">Slides, notebooks, and demos</h2>
-      <p>Open notebooks in Google Colab or browse the slides and rendered demonstrations by lesson.</p>
-      <div class="module-list">
-        <article class="module">
-          <h3>Introduction to GIS and Python</h3>
-          <ul class="resource-list">
-            <li><strong>Rendered demo: Raster Data PGD Ch3</strong> — <a href="Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.html">Open demo</a></li>
-            <li><strong>Notebook: Raster Data PGD Ch3</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/01-Introduction-to-GIS-and-Python/demo-raster-data-pgd-ch3.ipynb">View notebook source</a></li>
-            <li><strong>Rendered demo: Vector Data OSM</strong> — <a href="Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.html">Open demo</a></li>
-            <li><strong>Notebook: Vector Data OSM</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/01-Introduction-to-GIS-and-Python/demo-vector-data-osm.ipynb">View notebook source</a></li>
-            <li><strong>PDF: Lecture 1 Gis Overview And Geospatial Data Types</strong> — <a href="Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf">Open PDF</a></li>
-            <li><strong>PDF: Lecture 2 Geospatial Data Types And Python For Gis Beamer</strong> — <a href="Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS-beamer.pdf">Open PDF</a></li>
-            <li><strong>PDF: Lecture 2 Geospatial Data Types And Python For Gis</strong> — <a href="Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS.pdf">Open PDF</a></li>
-          </ul>
-        </article>
-        <article class="module">
-          <h3>Spatial Data Transforms and Projections</h3>
-          <ul class="resource-list">
-            <li><strong>PDF: Lecture 2 Geospatial Data Types And Python For Gis Beamer</strong> — <a href="Lessons/02-Spatial-Data-Transforms-and-Projections/slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS-beamer.pdf">Open PDF</a></li>
-            <li><strong>PDF: Lecture 2 Geospatial Data Types And Python For Gis</strong> — <a href="Lessons/02-Spatial-Data-Transforms-and-Projections/slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS.pdf">Open PDF</a></li>
-          </ul>
-        </article>
-        <article class="module">
-          <h3>Optical Radiation and the EM Spectrum</h3>
-          <ul class="resource-list">
-            <li><strong>PDF: Irs Chapter 2 Electromagnetic Radiation Beamer</strong> — <a href="Lessons/03-Optical-Radiation-and-the-EM-Spectrum/slides/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf">Open PDF</a></li>
-          </ul>
-        </article>
-        <article class="module">
-          <h3>Remote Sensing Platforms and Cameras</h3>
-          <ul class="resource-list">
-            <li><strong>PDF: Irs Chapter 3 Remote Sensing Platforms Beamer</strong> — <a href="Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides/IRS-Chapter-3-Remote-Sensing-Platforms-beamer.pdf">Open PDF</a></li>
-            <li><strong>PDF: Irs Chapter 4 Digital Mapping Cameras Beamer</strong> — <a href="Lessons/04-Remote-Sensing-Platforms-and-Cameras/slides/IRS-Chapter-4-Digital-Mapping-Cameras-beamer.pdf">Open PDF</a></li>
-          </ul>
-        </article>
-        <article class="module">
-          <h3>Image Classification and Land Cover</h3>
-          <ul class="resource-list">
-            <li><strong>Rendered demo: DeepGlobe</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.html">Open demo</a></li>
-            <li><strong>Notebook: DeepGlobe</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.ipynb">View notebook source</a></li>
-            <li><strong>Python source: DeepGlobe</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-deepglobe.py">View source</a></li>
-            <li><strong>Notebook: LULC Decision Tree</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-decision-tree.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-decision-tree.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC Decision Tree</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-decision-tree.py">View source</a></li>
-            <li><strong>Browser slides: LULC Decision Tree</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-decision-tree.slides.html">Open slides</a></li>
-            <li><strong>Notebook: LULC Gradient Boosting</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-gradient-boosting.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-gradient-boosting.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC Gradient Boosting</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-gradient-boosting.py">View source</a></li>
-            <li><strong>Browser slides: LULC Gradient Boosting</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-gradient-boosting.slides.html">Open slides</a></li>
-            <li><strong>Notebook: LULC k-means</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-kmeans.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-kmeans.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC k-means</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-kmeans.py">View source</a></li>
-            <li><strong>Browser slides: LULC k-means</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-kmeans.slides.html">Open slides</a></li>
-            <li><strong>Notebook: LULC k-NN</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-knn.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-knn.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC k-NN</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-knn.py">View source</a></li>
-            <li><strong>Browser slides: LULC k-NN</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-knn.slides.html">Open slides</a></li>
-            <li><strong>Notebook: LULC MLP</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-mlp.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-mlp.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC MLP</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-mlp.py">View source</a></li>
-            <li><strong>Browser slides: LULC MLP</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-mlp.slides.html">Open slides</a></li>
-            <li><strong>Notebook: LULC Naive Bayes</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-naive-bayes.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-naive-bayes.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC Naive Bayes</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-naive-bayes.py">View source</a></li>
-            <li><strong>Browser slides: LULC Naive Bayes</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-naive-bayes.slides.html">Open slides</a></li>
-            <li><strong>Rendered demo: LULC PyTorch</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.html">Open demo</a></li>
-            <li><strong>Notebook: LULC PyTorch</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC PyTorch</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-pytorch.py">View source</a></li>
-            <li><strong>Notebook: LULC Random Forest</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-random-forest.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-random-forest.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC Random Forest</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-random-forest.py">View source</a></li>
-            <li><strong>Browser slides: LULC Random Forest</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc-random-forest.slides.html">Open slides</a></li>
-            <li><strong>Rendered demo: LULC</strong> — <a href="Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.html">Open demo</a></li>
-            <li><strong>Notebook: LULC</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.ipynb">View notebook source</a></li>
-            <li><strong>Python source: LULC</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/06-Image-Classification-and-Land-Cover/demo-lulc.py">View source</a></li>
-          </ul>
-        </article>
-        <article class="module">
-          <h3>Microwave Lidar and Thermal Remote Sensing</h3>
-          <ul class="resource-list">
-            <li><strong>PDF: Clouds</strong> — <a href="Lessons/07-Microwave-Lidar-and-Thermal-Remote-Sensing/pdf/clouds.pdf">Open PDF</a></li>
-          </ul>
-        </article>
-        <article class="module">
-          <h3>Change Detection and Accuracy Assessment</h3>
-          <ul class="resource-list">
-            <li><strong>Notebook: Lombardia</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.ipynb">View notebook source</a></li>
-            <li><strong>Python source: Lombardia</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.py">View source</a></li>
-            <li><strong>Browser slides: Lombardia</strong> — <a href="Lessons/09-Change-Detection-and-Accuracy-Assessment/demo-lombardia.slides.html">Open slides</a></li>
-            <li><strong>PDF: Irs Chapter 15 Slides</strong> — <a href="Lessons/09-Change-Detection-and-Accuracy-Assessment/pdf/irs-chapter-15-slides.pdf">Open PDF</a></li>
-          </ul>
-        </article>
-        <article class="module">
-          <h3>Hyperspectral Remote Sensing</h3>
-          <ul class="resource-list">
-            <li><strong>Notebook: Hyperspectral Mixtures</strong> — <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb">Open in Colab</a> <span aria-hidden="true">·</span> <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.ipynb">View notebook source</a></li>
-            <li><strong>Python source: Hyperspectral Mixtures</strong> — <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.py">View source</a></li>
-            <li><strong>Browser slides: Hyperspectral Mixtures</strong> — <a href="Lessons/10-Hyperspectral-Remote-Sensing/demo-hyperspectral-mixtures.slides.html">Open slides</a></li>
-            <li><strong>PDF: Irs 14.1 14.4 Slides</strong> — <a href="Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.1-14.4-Slides.pdf">Open PDF</a></li>
-            <li><strong>PDF: Irs 14.5 14.7 Slides</strong> — <a href="Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.5-14.7-Slides.pdf">Open PDF</a></li>
-            <li><strong>PDF: Irs 14.8 14.10 Slides</strong> — <a href="Lessons/10-Hyperspectral-Remote-Sensing/slides/IRS-14.8-14.10-Slides.pdf">Open PDF</a></li>
-          </ul>
-        </article>
-        <article class="module">
-          <h3>Remote Sensing in Forestry and Vegetation</h3>
-          <ul class="resource-list">
-            <li><strong>PDF: Irs Chapter 18 Slides</strong> — <a href="Lessons/11-Remote-Sensing-in-Forestry-and-Vegetation/pdf/IRS-Chapter-18-Slides.pdf">Open PDF</a></li>
-          </ul>
-        </article>
-      </div>
-    </section>
-    <section aria-labelledby="practice-heading">
-      <h2 id="practice-heading">Practice quizzes</h2>
-      <div class="quiz-note">
-        <p>Optional self-check practice quizzes are planned. They will be separate from Canvas assessments and will not submit answers or grades.</p>
-      </div>
-    </section>
-  </main>
-  <footer>
-    <p>CSE 620B course materials · <a href="https://github.com/jfemiani/cse620b-public">Public course repository</a></p>
-  </footer>
+    <main id="main">
+      <h1>GIS and Geospatial Data</h1>
+      <p class="summary">Explore geographic information systems and the raster and vector models used to represent spatial data.</p>
+      <div class="category-tabs" role="tablist" aria-label="Topic materials"><button type="button" role="tab" id="tab-0" aria-controls="panel-0" aria-selected="true" tabindex="0">Lecture notes</button><button type="button" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="false" tabindex="-1">Slides</button><button type="button" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1">Demos</button><button type="button" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1">Labs</button><button type="button" role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1">Practice quizzes</button></div>
+      <div class="resource-panels"><section role="tabpanel" id="panel-0" aria-labelledby="tab-0" tabindex="0"><article class="resource"><h3>Lecture notes</h3><div class="actions"><a href="notes/gis-and-geospatial-data.html" data-embed="true">Read lecture notes</a></div></article></section><section role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0" hidden><article class="resource"><h3>GIS overview and geospatial data types</h3><div class="actions"><a href="presentation.html?pdf=Lessons%2F01-Introduction-to-GIS-and-Python%2Fslides%2FLecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf&amp;title=GIS+overview+and+geospatial+data+types" data-embed="true">View slideshow</a><a href="Lessons/01-Introduction-to-GIS-and-Python/slides/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf" download>Download PDF</a></div></article></section><section role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0" hidden><p class="empty">Demos have not been published for this topic.</p></section><section role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0" hidden><p class="empty">Labs have not been published for this topic. This site does not accept submissions.</p></section><section role="tabpanel" id="panel-4" aria-labelledby="tab-4" tabindex="0" hidden><p class="empty">Practice quizzes are to be developed. They will be separate from Canvas assessments.</p></section></div>
+      <section id="viewer" aria-label="Material viewer">
+        <div class="viewer-toolbar">
+          <h2 id="viewer-title">Lecture notes</h2>
+          <div class="actions">
+            <a id="open-material" href="notes/gis-and-geospatial-data.html" target="_blank" rel="noopener">Open separately</a>
+            <button type="button" id="fullscreen-material">Full screen</button>
+          </div>
+        </div>
+        <p id="viewer-error" role="alert" hidden></p>
+        <iframe id="material-frame" title="GIS and Geospatial Data: lecture notes" src="notes/gis-and-geospatial-data.html" allowfullscreen></iframe>
+      </section>
+      <noscript><p>Enable JavaScript to switch material categories and use the embedded viewer.</p></noscript>
+    </main>
+  </div>
 </body>
 </html>

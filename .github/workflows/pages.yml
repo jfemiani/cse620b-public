@@ -25,6 +25,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install browser presentation tools
+        run: npm ci
       - name: Install notebook build tools
         run: python -m pip install jupytext nbconvert ipykernel numpy matplotlib rasterio
       - name: Build notebook presentations
@@ -42,11 +48,13 @@ jobs:
             grep -q 'data:image/png;base64' "${source%.py}.slides.html"
           done
       - name: Build course home page
-        run: python scripts/build_course_index.py
+        run: npm run build
+      - name: Check topic pages and resources
+        run: npm test
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - name: Deploy Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -1,0 +1,5 @@
+.env
+node_modules/
+assets/vendor/
+__pycache__/
+_site/

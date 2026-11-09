@@ -1,0 +1,14 @@
+{
+  "name": "cse620b-course-site",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/copy_browser_assets.mjs && python3 scripts/build_course_index.py && python3 scripts/stage_site.py",
+    "test": "python3 -m unittest discover -s tests"
+  },
+  "dependencies": {
+    "mathjax": "2.7.9",
+    "pdfjs-dist": "4.10.38",
+    "requirejs": "2.3.8",
+    "reveal.js": "5.2.1"
+  }
+}

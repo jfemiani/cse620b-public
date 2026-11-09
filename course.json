@@ -1,0 +1,131 @@
+[
+  {
+    "slug": "gis-and-geospatial-data",
+    "title": "GIS and Geospatial Data",
+    "summary": "Explore geographic information systems and the raster and vector models used to represent spatial data.",
+    "notes": "notes/gis-and-geospatial-data.html",
+    "legacy": "1. GIS Overview and Geospatial Data Types.html",
+    "lesson": "01-Introduction-to-GIS-and-Python",
+    "slides": [
+      {"title": "GIS overview and geospatial data types", "file": "slides/Lecture-1-GIS-Overview-and-Geospatial-Data-Types.pdf"}
+    ],
+    "demos": []
+  },
+  {
+    "slug": "python-for-gis",
+    "title": "Python for GIS",
+    "summary": "Work with raster and vector data in Python, and connect geospatial data types with spatial transforms and projections.",
+    "notes": "notes/python-for-gis.html",
+    "legacy": "2. Geospatial Data Types and Python for GIS.html",
+    "lesson": "01-Introduction-to-GIS-and-Python",
+    "slides": [
+      {"title": "Geospatial data types and Python for GIS", "file": "slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS.pdf"},
+      {"title": "Geospatial data types and Python for GIS: alternate presentation", "file": "slides/Lecture-2-Geospatial-Data-Types-and-Python-for-GIS-beamer.pdf"}
+    ],
+    "demos": [
+      {"title": "Raster data", "stem": "demo-raster-data-pgd-ch3"},
+      {"title": "Vector data with OpenStreetMap", "stem": "demo-vector-data-osm"}
+    ]
+  },
+  {
+    "slug": "optical-radiation",
+    "title": "Optical Radiation and the EM Spectrum",
+    "summary": "Study electromagnetic radiation and the atmospheric and surface interactions that shape remote-sensing measurements.",
+    "notes": "notes/optical-radiation.html",
+    "legacy": "3. Optical Radiation and the EM Spectrum.html",
+    "lesson": "03-Optical-Radiation-and-the-EM-Spectrum",
+    "slides": [
+      {"title": "Electromagnetic radiation", "file": "slides/IRS-Chapter-2-Electromagnetic-Radiation-beamer.pdf"}
+    ],
+    "demos": []
+  },
+  {
+    "slug": "platforms-and-cameras",
+    "title": "Remote Sensing Platforms and Cameras",
+    "summary": "Explore remote-sensing platforms and digital mapping cameras.",
+    "lesson": "04-Remote-Sensing-Platforms-and-Cameras",
+    "slides": [
+      {"title": "Remote sensing platforms", "file": "slides/IRS-Chapter-3-Remote-Sensing-Platforms-beamer.pdf"},
+      {"title": "Digital mapping cameras", "file": "slides/IRS-Chapter-4-Digital-Mapping-Cameras-beamer.pdf"}
+    ],
+    "demos": []
+  },
+  {
+    "slug": "image-classification",
+    "title": "Image Classification and Land Cover",
+    "summary": "Compare clustering, supervised classification, and neural networks for mapping land cover from imagery.",
+    "notes": "notes/image-classification.html",
+    "legacy": "Chapter 12 - Image Classification.html",
+    "lesson": "06-Image-Classification-and-Land-Cover",
+    "slides": [],
+    "canvas_slides": [
+      {"title": "Unsupervised classification and clustering", "url": "https://miamioh.instructure.com/courses/255798/files/40678516/download"},
+      {"title": "Supervised classification", "url": "https://miamioh.instructure.com/courses/255798/files/40678517/download"},
+      {"title": "Random forests, k-nearest neighbors, and neural networks", "url": "https://miamioh.instructure.com/courses/255798/files/40678518/download"},
+      {"title": "Geometric and probabilistic decision rules", "url": "https://miamioh.instructure.com/courses/255798/files/40678519/download"}
+    ],
+    "demos": [
+      {"title": "Land-cover classification comparison", "stem": "demo-lulc"},
+      {"title": "K-means clustering", "stem": "demo-lulc-kmeans"},
+      {"title": "K-nearest neighbors", "stem": "demo-lulc-knn"},
+      {"title": "Gaussian Naive Bayes", "stem": "demo-lulc-naive-bayes"},
+      {"title": "Decision trees", "stem": "demo-lulc-decision-tree"},
+      {"title": "Random forests", "stem": "demo-lulc-random-forest"},
+      {"title": "Gradient boosting", "stem": "demo-lulc-gradient-boosting"},
+      {"title": "Multilayer perceptron", "stem": "demo-lulc-mlp"},
+      {"title": "Land-cover classification with PyTorch", "stem": "demo-lulc-pytorch"},
+      {"title": "DeepGlobe segmentation", "stem": "demo-deepglobe"}
+    ]
+  },
+  {
+    "slug": "microwave-lidar-and-thermal",
+    "title": "Microwave, Lidar, and Thermal Sensing",
+    "summary": "Course resources for microwave, lidar, and thermal remote sensing.",
+    "lesson": "07-Microwave-Lidar-and-Thermal-Remote-Sensing",
+    "slides": [
+      {"title": "Clouds", "file": "pdf/clouds.pdf"}
+    ],
+    "demos": []
+  },
+  {
+    "slug": "change-detection",
+    "title": "Change Detection",
+    "summary": "Compare images over time, distinguish spectral change from acquisition effects, and interpret change maps.",
+    "notes": "notes/change-detection.html",
+    "legacy": "Week 10 - Change Detection.html",
+    "lesson": "09-Change-Detection-and-Accuracy-Assessment",
+    "slides": [
+      {"title": "Change detection", "file": "pdf/irs-chapter-15-slides.pdf"}
+    ],
+    "demos": [
+      {"title": "Lombardia image time series", "stem": "demo-lombardia"}
+    ]
+  },
+  {
+    "slug": "hyperspectral-analysis",
+    "title": "Hyperspectral Data Analysis",
+    "summary": "Interpret spectral mixtures and choose between spectral matching, classification, and abundance mapping.",
+    "notes": "notes/hyperspectral-analysis.html",
+    "legacy": "Week 10 - Advanced Hyperspectral Data Analysis.html",
+    "lesson": "10-Hyperspectral-Remote-Sensing",
+    "slides": [
+      {"title": "Hyperspectral remote sensing: complete presentation", "file": "slides/IRS-Chapter-14-Hyperspectral-Remote-Sensing.pdf"},
+      {"title": "Hyperspectral fundamentals", "file": "slides/IRS-14.1-14.4-Slides.pdf"},
+      {"title": "Hyperspectral analysis methods", "file": "slides/IRS-14.5-14.7-Slides.pdf"},
+      {"title": "Advanced hyperspectral analysis", "file": "slides/IRS-14.8-14.10-Slides.pdf"}
+    ],
+    "demos": [
+      {"title": "Spectral mixtures", "stem": "demo-hyperspectral-mixtures"}
+    ]
+  },
+  {
+    "slug": "forestry-and-vegetation",
+    "title": "Forestry and Vegetation",
+    "summary": "Explore applications of remote sensing in forestry and vegetation.",
+    "lesson": "11-Remote-Sensing-in-Forestry-and-Vegetation",
+    "slides": [
+      {"title": "Remote sensing in forestry and vegetation", "file": "pdf/IRS-Chapter-18-Slides.pdf"}
+    ],
+    "demos": []
+  }
+]

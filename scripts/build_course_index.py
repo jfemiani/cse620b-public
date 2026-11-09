@@ -1,227 +1,200 @@
+import json
 from html import escape
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES_DIR = ROOT / "pages"
-LESSONS_DIR = ROOT / "Lessons"
 REPOSITORY = "jfemiani/cse620b-public"
+CATEGORIES = ("Lecture notes", "Slides", "Demos", "Labs", "Practice quizzes")
 
 
-def display_name(value: str) -> str:
-    name = value.removeprefix("demo-").replace("-", " ").replace("_", " ").title()
-    for before, after in (
-        ("Deepglobe", "DeepGlobe"),
-        ("Kmeans", "k-means"),
-        ("Knn", "k-NN"),
-        ("Lulc", "LULC"),
-        ("Mlp", "MLP"),
-        ("Osm", "OSM"),
-        ("Pgd", "PGD"),
-        ("Pytorch", "PyTorch"),
-    ):
-        name = name.replace(before, after)
-    return name
-
-
-def relative_url(path: Path) -> str:
+def url(path: Path) -> str:
     return quote(path.relative_to(ROOT).as_posix(), safe="/-._~")
 
 
-def github_url(path: Path) -> str:
-    return f"https://github.com/{REPOSITORY}/blob/main/{relative_url(path)}"
+def require_file(path: Path) -> Path:
+    if not path.is_file():
+        raise ValueError(f"Course resource does not exist: {path.relative_to(ROOT)}")
+    return path
 
 
-def page_links() -> str:
-    pages = sorted(PAGES_DIR.glob("*.html"), key=lambda path: path.name.casefold())
-    if not pages:
-        raise SystemExit(f"No course pages found in {PAGES_DIR}")
+def action(label: str, href: str, *, embed: bool = False, download: bool = False) -> str:
+    attributes = ""
+    if embed:
+        attributes = ' data-embed="true"'
+    elif download:
+        attributes = " download"
+    else:
+        attributes = ' target="_blank" rel="noopener"'
+    return f'<a href="{escape(href, quote=True)}"{attributes}>{escape(label)}</a>'
 
-    return "\n".join(
-        f'        <li><a href="{relative_url(page)}">{escape(page.stem)}</a></li>'
-        for page in pages
+
+def card(title: str, actions: list[str]) -> str:
+    return (
+        f'<article class="resource"><h3>{escape(title)}</h3>'
+        f'<div class="actions">{"".join(actions)}</div></article>'
     )
 
 
-def resource_link(path: Path) -> str | None:
-    filename = path.name
-    if filename.endswith(".slides.html"):
-        label = f"Browser slides: {display_name(filename.removesuffix('.slides.html'))}"
-        link = f'<a href="{relative_url(path)}">Open slides</a>'
-    elif path.suffix == ".ipynb":
-        label = f"Notebook: {display_name(path.stem)}"
-        colab_url = (
-            "https://colab.research.google.com/github/"
-            f"{REPOSITORY}/blob/main/{relative_url(path)}"
+def slide_cards(topic: dict, prefix: str) -> str:
+    cards = []
+    lesson = ROOT / "Lessons" / topic["lesson"]
+    for slide in topic["slides"]:
+        pdf = require_file(lesson / slide["file"])
+        viewer = prefix + "presentation.html?" + urlencode(
+            {"pdf": url(pdf), "title": slide["title"]}
         )
-        link = (
-            f'<a href="{colab_url}">Open in Colab</a>'
-            f' <span aria-hidden="true">·</span> '
-            f'<a href="{github_url(path)}">View notebook source</a>'
-        )
-    elif path.suffix == ".pdf":
-        label = f"PDF: {display_name(path.stem)}"
-        link = f'<a href="{relative_url(path)}">Open PDF</a>'
-    elif path.suffix == ".html":
-        label = f"Rendered demo: {display_name(path.stem)}"
-        link = f'<a href="{relative_url(path)}">Open demo</a>'
-    elif path.suffix == ".py":
-        label = f"Python source: {display_name(path.stem)}"
-        link = f'<a href="{github_url(path)}">View source</a>'
-    else:
-        return None
-
-    return f"            <li><strong>{escape(label)}</strong> — {link}</li>"
+        cards.append(card(slide["title"], [
+            action("View slideshow", viewer, embed=True),
+            action("Download PDF", prefix + url(pdf), download=True),
+        ]))
+    for slide in topic.get("canvas_slides", []):
+        cards.append(card(slide["title"], [
+            action("Open on Canvas (course access required)", slide["url"]),
+        ]))
+    for demo in topic["demos"]:
+        rendered = lesson / (demo["stem"] + ".slides.html")
+        if rendered.is_file():
+            cards.append(card(demo["title"], [
+                action("View slideshow", prefix + url(rendered), embed=True),
+                action("Open separately", prefix + url(rendered)),
+            ]))
+    return "".join(cards) or '<p class="empty">Lecture slides have not been published for this topic.</p>'
 
 
-def lesson_sections() -> str:
-    sections = []
-    for lesson in sorted(LESSONS_DIR.iterdir(), key=lambda path: path.name.casefold()):
-        if not lesson.is_dir():
-            continue
-        resources = [
-            item
-            for path in sorted(lesson.rglob("*"), key=lambda path: path.as_posix().casefold())
-            if path.is_file()
-            if (item := resource_link(path)) is not None
+def demo_cards(topic: dict, prefix: str) -> str:
+    cards = []
+    lesson = ROOT / "Lessons" / topic["lesson"]
+    for demo in topic["demos"]:
+        notebook = require_file(lesson / (demo["stem"] + ".ipynb"))
+        colab = f"https://colab.research.google.com/github/{REPOSITORY}/blob/main/{url(notebook)}"
+        actions = [
+            action("Open in Google Colab", colab),
+            action("Download notebook", prefix + url(notebook), download=True),
         ]
-        if not resources:
-            continue
-        title = lesson.name.split("-", 1)[-1].replace("-", " ")
-        sections.append(
-            f"""        <article class="module">
-          <h3>{escape(title)}</h3>
-          <ul class="resource-list">
-{chr(10).join(resources)}
-          </ul>
-        </article>"""
+        for suffix, label in ((".html", "View rendered output"), (".slides.html", "View as slides")):
+            rendered = lesson / (demo["stem"] + suffix)
+            if rendered.is_file():
+                actions.append(action(label, prefix + url(rendered), embed=True))
+        source = lesson / (demo["stem"] + ".py")
+        if source.is_file():
+            actions.append(action("Download Python", prefix + url(source), download=True))
+        cards.append(card(demo["title"], actions))
+    return "".join(cards) or '<p class="empty">Demos have not been published for this topic.</p>'
+
+
+def page(topic: dict, topics: list[dict], *, home: bool = False) -> str:
+    prefix = "" if home else "../"
+    nav = "".join(
+        f'<a href="{prefix}pages/{item["slug"]}.html"'
+        + (' aria-current="page"' if item["slug"] == topic["slug"] else "")
+        + f'>{escape(item["title"])}</a>'
+        for item in topics
+    )
+    tabs = "".join(
+        f'<button type="button" role="tab" id="tab-{index}" aria-controls="panel-{index}"'
+        f' aria-selected="{"true" if index == 0 else "false"}"'
+        f' tabindex="{0 if index == 0 else -1}">{label}</button>'
+        for index, label in enumerate(CATEGORIES)
+    )
+    notes = '<p class="empty">Lecture notes have not been published for this topic.</p>'
+    if topic.get("notes"):
+        note = require_file(ROOT / topic["notes"])
+        notes = card("Lecture notes", [action("Read lecture notes", prefix + url(note), embed=True)])
+    content = (
+        notes,
+        slide_cards(topic, prefix),
+        demo_cards(topic, prefix),
+        '<p class="empty">Labs have not been published for this topic. This site does not accept submissions.</p>',
+        '<p class="empty">Practice quizzes are to be developed. They will be separate from Canvas assessments.</p>',
+    )
+    panels = "".join(
+        f'<section role="tabpanel" id="panel-{index}" aria-labelledby="tab-{index}"'
+        f' tabindex="0"{"" if index == 0 else " hidden"}>{body}</section>'
+        for index, body in enumerate(content)
+    )
+    first_notes = ""
+    if topic.get("notes"):
+        first_notes = (
+            f'<iframe id="material-frame" title="{escape(topic["title"])}: lecture notes"'
+            f' src="{prefix}{url(ROOT / topic["notes"])}" allowfullscreen></iframe>'
         )
-    if not sections:
-        raise SystemExit(f"No lesson resources found in {LESSONS_DIR}")
-    return "\n".join(sections)
-
-
-def main() -> None:
-    template = """<!doctype html>
+    else:
+        first_notes = '<iframe id="material-frame" title="Selected course material" allowfullscreen hidden></iframe>'
+    return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Course pages, lecture slides, and Colab notebooks for CSE 620B at Miami University.">
-  <title>CSE 620B | Computer Vision for Remote Sensing</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --red: #941728;
-      --ink: #242424;
-      --muted: #555;
-      --line: #dedede;
-      --panel: #f7f5f3;
-      --link: #075b85;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      background: #fff;
-      font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
-    }
-    a { color: var(--link); text-underline-offset: 3px; overflow-wrap: anywhere; }
-    a:focus-visible { outline: 3px solid #e6a700; outline-offset: 3px; }
-    .skip-link {
-      position: absolute;
-      top: -5rem;
-      left: 1rem;
-      z-index: 1;
-      padding: .5rem .75rem;
-      background: #fff;
-    }
-    .skip-link:focus { top: 1rem; }
-    header {
-      padding: 3rem max(1.25rem, calc((100% - 1100px) / 2));
-      color: #fff;
-      background: var(--red);
-    }
-    header p { max-width: 720px; margin: .75rem 0 0; }
-    .eyebrow { margin: 0; font-size: .9rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    h1 { max-width: 850px; margin: .5rem 0 0; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.15; }
-    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
-    h2 { margin: 2.5rem 0 1rem; color: var(--red); font-size: 1.6rem; line-height: 1.3; }
-    h3 { margin: 0; font-size: 1.25rem; line-height: 1.35; }
-    .notice, .quiz-note {
-      padding: 1rem 1.25rem;
-      border-left: 5px solid var(--red);
-      background: var(--panel);
-    }
-    .notice { margin: 0 0 2rem; }
-    .notice p, .quiz-note p { margin: 0; }
-    .page-list, .resource-list { margin: .8rem 0 0; padding-left: 1.25rem; }
-    .page-list li, .resource-list li { margin: .45rem 0; }
-    .module-list { display: grid; gap: 1rem; }
-    .module {
-      padding: 1.25rem;
-      border: 1px solid var(--line);
-      border-radius: .5rem;
-      background: #fff;
-    }
-    .resource-list { color: var(--muted); }
-    .resource-list a { font-weight: 600; }
-    footer {
-      padding: 1.5rem max(1.25rem, calc((100% - 1100px) / 2));
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: .95rem;
-    }
-    @media (min-width: 760px) {
-      .module-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-  </style>
+  <meta name="description" content="{escape(topic['summary'], quote=True)}">
+  <title>{escape(topic['title'])} | CSE 620B</title>
+  <link rel="stylesheet" href="{prefix}assets/course.css">
+  <script src="{prefix}assets/course.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to course materials</a>
-  <header>
-    <p class="eyebrow">Miami University</p>
-    <h1>CSE 620B: Computer Vision for Remote Sensing</h1>
-    <p>Lecture pages, slides, and hands-on notebooks for exploring computer vision in remote sensing.</p>
+  <a class="skip-link" href="#main">Skip to topic</a>
+  <header class="course-header">
+    <a href="{prefix}index.html"><strong>CSE 620B</strong><span>Computer Vision for Remote Sensing</span></a>
+    <p>Miami University</p>
   </header>
-  <main id="main">
-    <aside class="notice" aria-label="Course site information">
-      <p><strong>Read-only course resource site.</strong> This site does not collect assignment submissions or quiz attempts. Use Canvas when coursework must be submitted.</p>
+  <div class="course-layout">
+    <aside class="sidebar">
+      <h2>Topics</h2>
+      <nav aria-label="Course topics">{nav}</nav>
+      <p class="site-note">Course materials only.<br>No submissions or grades.</p>
     </aside>
-    <section aria-labelledby="course-pages-heading">
-      <h2 id="course-pages-heading">Course pages</h2>
-      <p>Student-facing lesson pages, including the course content maintained for Canvas.</p>
-      <ul class="page-list">
-{page_links}
-      </ul>
-    </section>
-    <section aria-labelledby="materials-heading">
-      <h2 id="materials-heading">Slides, notebooks, and demos</h2>
-      <p>Open notebooks in Google Colab or browse the slides and rendered demonstrations by lesson.</p>
-      <div class="module-list">
-{lesson_sections}
-      </div>
-    </section>
-    <section aria-labelledby="practice-heading">
-      <h2 id="practice-heading">Practice quizzes</h2>
-      <div class="quiz-note">
-        <p>Optional self-check practice quizzes are planned. They will be separate from Canvas assessments and will not submit answers or grades.</p>
-      </div>
-    </section>
-  </main>
-  <footer>
-    <p>CSE 620B course materials · <a href="https://github.com/jfemiani/cse620b-public">Public course repository</a></p>
-  </footer>
+    <main id="main">
+      <h1>{escape(topic['title'])}</h1>
+      <p class="summary">{escape(topic['summary'])}</p>
+      <div class="category-tabs" role="tablist" aria-label="Topic materials">{tabs}</div>
+      <div class="resource-panels">{panels}</div>
+      <section id="viewer" aria-label="Material viewer"{"" if topic.get("notes") else " hidden"}>
+        <div class="viewer-toolbar">
+          <h2 id="viewer-title">Lecture notes</h2>
+          <div class="actions">
+            <a id="open-material" href="{prefix + topic['notes'] if topic.get('notes') else '#'}" target="_blank" rel="noopener">Open separately</a>
+            <button type="button" id="fullscreen-material">Full screen</button>
+          </div>
+        </div>
+        <p id="viewer-error" role="alert" hidden></p>
+        {first_notes}
+      </section>
+      <noscript><p>Enable JavaScript to switch material categories and use the embedded viewer.</p></noscript>
+    </main>
+  </div>
 </body>
 </html>
 """
-    (ROOT / "index.html").write_text(
-        template.replace("{page_links}", page_links()).replace(
-            "{lesson_sections}", lesson_sections()
-        ),
-        encoding="utf-8",
-    )
+
+
+def redirect(target: str, title: str) -> str:
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0; url={target}">
+  <link rel="canonical" href="{target}">
+  <title>{escape(title)} | CSE 620B</title>
+</head>
+<body><p>This topic has moved to <a href="{target}">{escape(title)}</a>.</p></body>
+</html>
+"""
+
+
+def main() -> None:
+    topics = json.loads((ROOT / "course.json").read_text(encoding="utf-8"))
+    if not topics or len({topic["slug"] for topic in topics}) != len(topics):
+        raise ValueError("Course topics must be nonempty and have unique slugs")
+    pages = ROOT / "pages"
+    pages.mkdir(exist_ok=True)
+    for topic in topics:
+        (pages / (topic["slug"] + ".html")).write_text(page(topic, topics), encoding="utf-8")
+        if topic.get("legacy"):
+            (pages / topic["legacy"]).write_text(
+                redirect(topic["slug"] + ".html", topic["title"]), encoding="utf-8"
+            )
+    (ROOT / "index.html").write_text(page(topics[0], topics, home=True), encoding="utf-8")
 
 
 if __name__ == "__main__":

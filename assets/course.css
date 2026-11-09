@@ -1,0 +1,62 @@
+:root {
+  color-scheme: light;
+  --red: #941728;
+  --ink: #242424;
+  --muted: #595959;
+  --border: #dedede;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: #fff; font: 16px/1.6 system-ui, sans-serif; }
+a { color: #075b85; text-underline-offset: 3px; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid #ba7900; outline-offset: 3px; }
+[hidden] { display: none !important; }
+.skip-link { position: absolute; top: -5rem; left: 1rem; z-index: 3; padding: .5rem; background: #fff; }
+.skip-link:focus { top: .5rem; }
+.course-header { background: var(--red); color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+.course-header a { color: inherit; text-decoration: none; display: flex; gap: 1rem; align-items: baseline; flex-wrap: wrap; }
+.course-header strong { font-size: 1.4rem; }
+.course-header p { margin: 0; font-size: .9rem; }
+.course-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); min-height: calc(100vh - 76px); }
+.sidebar { min-width: 0; border-right: 1px solid var(--border); background: #f7f6f5; padding: 1.5rem 1rem; }
+.sidebar h2 { margin: 0 .75rem 1rem; color: var(--muted); font-size: .85rem; text-transform: uppercase; letter-spacing: .1em; }
+.sidebar nav { display: grid; gap: .3rem; }
+.sidebar nav a { display: block; padding: .7rem .75rem; border-left: 3px solid transparent; border-radius: 0 .3rem .3rem 0; text-decoration: none; color: var(--ink); line-height: 1.4; }
+.sidebar nav a:hover { background: #ebe6e5; }
+.sidebar nav a[aria-current] { border-left-color: var(--red); background: #eee0e2; color: #7a1120; font-weight: 650; }
+.site-note { margin: 2rem .75rem 0; font-size: .8rem; color: var(--muted); }
+main { padding: 2rem clamp(1rem, 3vw, 3rem); min-width: 0; max-width: 1600px; }
+h1 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1.2; }
+.summary { color: var(--muted); max-width: 78ch; margin: .75rem 0 1.5rem; }
+.category-tabs { display: flex; gap: .25rem; border-bottom: 1px solid var(--border); overflow-x: auto; padding: .25rem; }
+.category-tabs button { white-space: nowrap; border: 0; border-bottom: 3px solid transparent; padding: .65rem .85rem; background: transparent; color: var(--muted); }
+.category-tabs button[aria-selected="true"] { border-bottom-color: var(--red); color: var(--red); font-weight: 650; }
+.resource-panels { margin: 1rem 0; }
+[role="tabpanel"] { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: .75rem; }
+.resource { border: 1px solid var(--border); border-radius: .35rem; padding: 1rem; }
+.resource h3 { margin: 0 0 .6rem; font-size: 1rem; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; font-size: .9rem; }
+.actions button { padding: .2rem .5rem; border: 1px solid var(--border); background: #fff; border-radius: .2rem; }
+.actions a[aria-current="true"] { color: var(--red); font-weight: 650; }
+.empty { color: var(--muted); padding: .25rem; margin: 0; }
+#viewer { border: 1px solid var(--border); border-radius: .35rem; overflow: hidden; background: #fff; }
+.viewer-toolbar { padding: .65rem 1rem; background: #f7f6f5; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.viewer-toolbar h2 { font-size: 1rem; margin: 0; }
+#material-frame { display: block; width: 100%; height: max(65vh, 550px); border: 0; background: #fff; }
+#viewer:fullscreen { display: flex; flex-direction: column; }
+#viewer:fullscreen #material-frame { flex: 1; height: auto; }
+#viewer-error { padding: 0 1rem; color: #941728; }
+@media (max-width: 760px) {
+  .course-header { padding: 1rem; }
+  .course-header p { display: none; }
+  .course-header a { gap: .25rem .75rem; }
+  .course-header span { font-size: .85rem; }
+  .course-layout { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { padding: .75rem; border-right: 0; border-bottom: 1px solid var(--border); }
+  .sidebar h2, .site-note { display: none; }
+  .sidebar nav { display: flex; overflow-x: auto; gap: .4rem; padding: .25rem; }
+  .sidebar nav a { min-width: 170px; max-width: 210px; font-size: .9rem; border-left: 0; border-bottom: 3px solid transparent; }
+  .sidebar nav a[aria-current] { border-bottom-color: var(--red); }
+  main { padding: 1.5rem 1rem; }
+  #material-frame { height: 65vh; min-height: 400px; }
+}

@@ -1,0 +1,8 @@
+body { max-width: 900px; margin: 0 auto; padding: 1.5rem; color: #242424; background: #fff; font: 17px/1.65 system-ui, sans-serif; }
+h1 { font-size: 1.8rem; line-height: 1.25; }
+h2 { color: #fff; background: #941728; padding: .5rem .75rem; font-size: 1.3rem; }
+a { color: #075b85; text-underline-offset: 3px; overflow-wrap: anywhere; }
+img { max-width: 100%; height: auto; }
+figure { margin: 1.5rem 0; }
+figcaption { font-size: .9rem; color: #595959; }
+pre { padding: 1rem; background: #f7f6f5; overflow-x: auto; }

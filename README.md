@@ -1,5 +1,43 @@
 # CSE620B - Computer Vision for Remote Sensing
 
+## Course website
+
+The [course site](https://jfemiani.github.io/cse620b-public/) organizes materials
+by topic in presentation order. Each topic has lecture notes, slides, demos,
+labs, and practice-quiz tabs. Materials open in the page; notebooks also have
+Colab and download links. Labs and practice quizzes are explicitly marked
+unavailable until authored. The site does not accept submissions or grades.
+
+Topic order, public titles, and resource assignments live in `course.json`.
+Edit notes in `notes/`, rather than the generated topic pages in `pages/`.
+The original numbered Canvas-page URLs redirect to topic-named pages, so
+existing links continue to work. This changes the public website only, not
+the titles of live Canvas items.
+
+To preview changes:
+
+```bash
+npm ci
+npm run build
+npm test
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000/_site/`. The Pages workflow runs the same build and checks
+before deployment. Add only reviewed student-facing resources to `course.json`;
+a referenced file that is missing will fail the build.
+
+Lecture PDFs are displayed in Reveal.js using PDF.js, with PDF downloads kept
+alongside the viewer. This preserves existing decks without pretending that
+PDFs contain editable Reveal or Marp source. Existing notebook HTML/Reveal
+exports are embedded directly. Marp can generate standalone HTML, but does not
+natively export Reveal.js. The staged site hosts Reveal.js, PDF.js, and the
+existing notebook exports' RequireJS and MathJax dependencies locally.
+
+Four image-classification lecture PDFs remain Canvas-only; the notes label
+those links as requiring course access. They are not represented as public
+downloads.
+
 ### Miami University, Fall 2024
 
 - **Class Schedule**: Tuesday & Thursday, 2:50 PM - 4:10 PM  
