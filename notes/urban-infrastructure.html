@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../assets/notes.css">
+  <title>Urban Infrastructure</title>
+</head>
+<body>
+  <h1>Urban Infrastructure</h1>
+  <p>A city assessing flood exposure needs more than a map of bright pixels. The analysis must locate individual buildings, compare their footprints with a flood zone, and account for uncertainty in both layers.</p>
+  <h2>From imagery to buildings</h2>
+  <p>Land cover describes physical surfaces such as roofs and pavement; land use describes activity, such as residential or commercial use. Images provide evidence about surfaces, but a building's use or occupancy generally requires additional information.</p>
+  <p>Choose imagery with enough spatial detail for the objects of interest. Shadows, trees, off-nadir viewing, and differences between image and footprint dates can make roof outlines hard to interpret. An intersection with a mapped flood zone indicates potential exposure, not confirmed damage.</p>
+  <h2>Evaluate the result</h2>
+  <p>Pixel precision, recall, and intersection over union describe agreement in mapped area. They do not by themselves establish that individual buildings were counted correctly. Define how predicted and reference objects are matched, and check errors on independent locations.</p>
+  <h2>Lesson materials</h2>
+  <p><a href="../pages/urban-infrastructure.html#tab-1" target="_parent">View the lecture slides</a> or <a href="../Lessons/12-Urban-Infrastructure/slides/urban-infrastructure.pdf" download>download the PDF</a>.</p>
+  <p><a href="../pages/urban-infrastructure.html#tab-2" target="_parent">Open the demonstrations</a>: inspect a real aerial image and mapped labels, then compare pixel and object scores with controlled synthetic masks.</p>
+  <h2>Data sources</h2>
+  <ul>
+    <li><a href="https://huggingface.co/datasets/hotosm/vhr-building-segmentation">HOT VHR Building Segmentation Dataset</a>: aerial imagery from the Open Imagery Network (CC BY 4.0) and OpenStreetMap labels (ODbL 1.0). The demo uses a sample from Tajikistan.</li>
+    <li><a href="https://naip-usdaonline.hub.arcgis.com/">USDA NAIP</a>: aerial imagery, with acquisition dates and availability varying by location.</li>
+    <li><a href="https://www.usgs.gov/3d-elevation-program">USGS 3D Elevation Program</a>: elevation and lidar products.</li>
+    <li><a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> and <a href="https://github.com/microsoft/USBuildingFootprints">Microsoft US Building Footprints</a>: mapped or modeled features with coverage and date limitations.</li>
+  </ul>
+</body>
+</html>

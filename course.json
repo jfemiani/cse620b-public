@@ -119,6 +119,20 @@
     ]
   },
   {
+    "slug": "urban-infrastructure",
+    "title": "Urban Infrastructure",
+    "summary": "Inspect urban imagery and building labels, then evaluate maps at the pixel and building level.",
+    "notes": "notes/urban-infrastructure.html",
+    "lesson": "12-Urban-Infrastructure",
+    "slides": [
+      {"title": "Remote sensing of urban infrastructure", "file": "slides/urban-infrastructure.pdf"}
+    ],
+    "demos": [
+      {"title": "Inspect aerial imagery and building labels", "stem": "demo-building-imagery"},
+      {"title": "Evaluate building pixels and objects", "stem": "demo-building-metrics"}
+    ]
+  },
+  {
     "slug": "forestry-and-vegetation",
     "title": "Forestry and Vegetation",
     "summary": "Explore applications of remote sensing in forestry and vegetation.",
