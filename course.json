@@ -135,10 +135,10 @@
   {
     "slug": "forestry-and-vegetation",
     "title": "Forestry and Vegetation",
-    "summary": "Explore applications of remote sensing in forestry and vegetation.",
+    "summary": "Connect forest management questions to optical, lidar, radar, and field observations.",
     "lesson": "11-Remote-Sensing-in-Forestry-and-Vegetation",
     "slides": [
-      {"title": "Remote sensing in forestry and vegetation", "file": "pdf/IRS-Chapter-18-Slides.pdf"}
+      {"title": "Remote sensing of forests and vegetation", "file": "slides/forestry-and-vegetation.pdf"}
     ],
     "demos": []
   }
