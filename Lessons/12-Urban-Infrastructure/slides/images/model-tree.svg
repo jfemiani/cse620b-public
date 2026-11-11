@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620">
+<rect width="1200" height="620" fill="white"/>
+<g font-family="DejaVu Sans, sans-serif">
+<rect x="270" y="10" width="660" height="62" rx="11" fill="#941728"/>
+<text x="600" y="51" text-anchor="middle" font-size="26" fill="white">Urban infrastructure models</text>
+<path d="M600 72 V92 M290 92 H910 M290 92 V115 M910 92 V115 M290 92 H10 V340 H290 V357 M910 92 H1190 V340 H910 V357" fill="none" stroke="#aab4be" stroke-width="3"/>
+<rect x="25" y="115" width="530" height="205" rx="15" fill="#e3eef7" stroke="#b8c3cc" stroke-width="2"/>
+<text x="47" y="158" font-size="29" font-weight="bold" fill="#27333c">Pixels and masks</text>
+<line x1="47" y1="174" x2="533" y2="174" stroke="#b8c3cc"/>
+<text x="47" y="220" font-size="21" fill="#29353d">Semantic segmentation: U-Net, DeepLab</text>
+<text x="47" y="274" font-size="21" fill="#29353d">Foundation models: SAM / EO encoders</text>
+<rect x="645" y="115" width="530" height="205" rx="15" fill="#e4f3eb" stroke="#b8c3cc" stroke-width="2"/>
+<text x="667" y="158" font-size="29" font-weight="bold" fill="#27333c">Objects and polygons</text>
+<line x1="667" y1="174" x2="1153" y2="174" stroke="#b8c3cc"/>
+<text x="667" y="220" font-size="21" fill="#29353d">Instance masks: Mask R-CNN, Mask2Former</text>
+<text x="667" y="274" font-size="21" fill="#29353d">Vector polygons: Pix2Poly, PolyFootNet</text>
+<rect x="25" y="357" width="530" height="205" rx="15" fill="#fff1da" stroke="#b8c3cc" stroke-width="2"/>
+<text x="47" y="400" font-size="29" font-weight="bold" fill="#27333c">Road networks</text>
+<line x1="47" y1="416" x2="533" y2="416" stroke="#b8c3cc"/>
+<text x="47" y="462" font-size="21" fill="#29353d">Road mask → graph: segmentation + tracing</text>
+<text x="47" y="516" font-size="21" fill="#29353d">Direct graph methods: RoadTracer, Sat2Graph</text>
+<rect x="645" y="357" width="530" height="205" rx="15" fill="#f0e8f7" stroke="#b8c3cc" stroke-width="2"/>
+<text x="667" y="400" font-size="29" font-weight="bold" fill="#27333c">3D structures</text>
+<line x1="667" y1="416" x2="1153" y2="416" stroke="#b8c3cc"/>
+<text x="667" y="462" font-size="21" fill="#29353d">Height and surfaces: lidar, stereo, optical</text>
+<text x="667" y="516" font-size="21" fill="#29353d">Building geometry: roofs, meshes, programs</text>
+</g></svg>

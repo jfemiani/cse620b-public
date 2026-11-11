@@ -47,6 +47,11 @@ jobs:
               --ExecutePreprocessor.timeout=300 "$notebook"
             grep -q 'data:image/png;base64' "${source%.py}.slides.html"
           done
+      - name: Build urban infrastructure slides
+        run: |
+          npx --yes @marp-team/marp-cli@4.5.1 --pdf --allow-local-files \
+            Lessons/12-Urban-Infrastructure/slides/urban-infrastructure.md \
+            -o Lessons/12-Urban-Infrastructure/slides/urban-infrastructure.pdf
       - name: Build course home page
         run: npm run build
       - name: Check topic pages and resources
