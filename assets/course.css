@@ -51,12 +51,12 @@ h1 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1.2; }
   .course-header p { display: none; }
   .course-header a { gap: .25rem .75rem; }
   .course-header span { font-size: .85rem; }
-  .course-layout { grid-template-columns: minmax(0, 1fr); }
-  .sidebar { padding: .75rem; border-right: 0; border-bottom: 1px solid var(--border); }
+  .course-layout { grid-template-columns: clamp(130px, 24vw, 190px) minmax(0, 1fr); }
+  .sidebar { padding: .75rem .5rem; border-right: 1px solid var(--border); }
   .sidebar h2, .site-note { display: none; }
-  .sidebar nav { display: flex; overflow-x: auto; gap: .4rem; padding: .25rem; }
-  .sidebar nav a { min-width: 170px; max-width: 210px; font-size: .9rem; border-left: 0; border-bottom: 3px solid transparent; }
-  .sidebar nav a[aria-current] { border-bottom-color: var(--red); }
-  main { padding: 1.5rem 1rem; }
+  .sidebar nav { display: grid; gap: .25rem; }
+  .sidebar nav a { min-width: 0; max-width: none; padding: .6rem .4rem; font-size: .85rem; border-left: 3px solid transparent; border-bottom: 0; overflow-wrap: anywhere; }
+  .sidebar nav a[aria-current] { border-left-color: var(--red); }
+  main { padding: 1.5rem .75rem; }
   #material-frame { height: 65vh; min-height: 400px; }
 }
