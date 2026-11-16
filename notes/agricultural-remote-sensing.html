@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../assets/notes.css">
+  <title>Agricultural Remote Sensing</title>
+</head>
+<body>
+  <h1>Agricultural Remote Sensing</h1>
+  <p>Multispectral imagery records reflected energy in several wavelength bands. Reflectance is the fraction of incoming light returned by a surface. Green leaves absorb much of the red light used in photosynthesis and reflect near-infrared (NIR) energy. The canopy is the leaves and branches seen from above. Repeated observations can show how vegetation changes through a growing season. A vegetation index combines bands into a compact signal; the normalized difference vegetation index (NDVI), for example, contrasts NIR and red reflectance: <code>(NIR - red) / (NIR + red)</code>. An index is a clue about canopy conditions, not a direct measurement of crop type, yield, or cause of stress.</p>
+
+  <h2>Learning goals</h2>
+  <ul>
+    <li>Explain why repeated observations are useful for monitoring crop development.</li>
+    <li>Calculate the share of labeled pixels belonging to selected crop classes.</li>
+    <li>Distinguish a reference land-cover label from a measurement of crop health.</li>
+  </ul>
+
+  <h2>In-class activity: which crop classes dominate this patch?</h2>
+  <p>Work in pairs for 10-15 minutes. Use the color-coded reference labels for a GF-1 satellite scene to compare paddy fields, irrigated fields, and dry cropland in one 1,000-by-1,000-pixel window. This activity counts map labels; it does not calculate NDVI or classify crops from reflectance. Each percentage below uses all non-black labeled pixels in the window as its denominator, including non-crop classes. The label file is about 3.5 MB; the corresponding source image is about 83 MB and is optional.</p>
+  <p><a href="https://vision.csi.miamioh.edu/data/cse620b/lesson-06/GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2_dense.tif">Download the color-coded reference labels</a> |
+     <a href="https://vision.csi.miamioh.edu/data/cse620b/lesson-06/GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2.tif">Optional GF-1 image</a></p>
+  <p>In the label file, black (RGB 0, 0, 0) means unlabeled; the RGB values in the code identify the four selected crop-related classes. Other non-black colors are other land-cover classes. Run this in a notebook with NumPy, Matplotlib, and Rasterio. It downloads only the small label raster. If classroom network access is uncertain, download the label file before class and put it next to the notebook as <code>label_name</code>.</p>
+  <pre><code>from pathlib import Path
+from urllib.request import urlretrieve
+
+import matplotlib.pyplot as plt
+import numpy as np
+import rasterio
+from matplotlib.patches import Patch
+from rasterio.plot import reshape_as_image
+
+data_url = "https://vision.csi.miamioh.edu/data/cse620b/lesson-06"
+label_name = "GF1_PMS2_E113.7_N30.2_20160614_L1A0001642547-MSS2_dense.tif"
+label_path = Path(label_name)
+if not label_path.exists():
+    urlretrieve(f"{data_url}/{label_name}", label_path)
+
+# Rasterio windows are ((row_start, row_stop), (col_start, col_stop)).
+with rasterio.open(label_path) as source:
+    labels_rgb = reshape_as_image(
+        source.read((1, 2, 3), window=((3500, 4500), (1500, 2500)))
+    )
+if labels_rgb.shape != (1000, 1000, 3):
+    raise ValueError(f"Expected a 1000-by-1000 RGB window; got {labels_rgb.shape}")
+
+crop_colors = {
+    "Paddy field": (0, 200, 0),
+    "Irrigated field": (150, 250, 0),
+    "Dry cropland": (150, 200, 150),
+    "Garden land": (200, 0, 200),
+}
+valid = np.any(labels_rgb != 0, axis=-1)
+crop_masks = {
+    name: np.all(labels_rgb == color, axis=-1)
+    for name, color in crop_colors.items()
+}
+
+for name, mask in crop_masks.items():
+    print(f"{name}: {mask.sum() / valid.sum():.1%} of labeled pixels")
+
+core_crop_names = ("Paddy field", "Irrigated field", "Dry cropland")
+core_crop_share = sum(crop_masks[name].sum() for name in core_crop_names) / valid.sum()
+with_gardens_share = core_crop_share + crop_masks["Garden land"].sum() / valid.sum()
+print(f"Core cropland: {core_crop_share:.1%} of labeled pixels")
+print(f"Including garden land: {with_gardens_share:.1%} of labeled pixels")
+
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.imshow(labels_rgb)
+ax.set_title("GF-1 reference labels (selected patch)")
+ax.axis("off")
+ax.legend(
+    handles=[
+        Patch(color=np.array(color) / 255, label=name)
+        for name, color in crop_colors.items()
+    ],
+    loc="upper left",
+    bbox_to_anchor=(1.02, 1),
+)
+fig.tight_layout()
+plt.show()</code></pre>
+  <p>Compare the four printed class shares. Which of these classes is most common? How much does your core-cropland total change if garden land counts too? Use the printed values for these questions; the map is optional visual context. The percentages are shares of labeled pixels in this patch, not acres or a crop-yield estimate. The label raster is a reference map, not a new classification made by the code.</p>
+  <p>The raster has no georeferencing, so this activity cannot convert the pixel counts to ground area. If the download or package setup is a problem, use the preconfigured CSE 620B Python environment and download the small label file before class.</p>
+
+  <h2>Discuss</h2>
+  <ul>
+    <li>What could a single-date image miss about crop growth?</li>
+    <li>Why would a time series help separate seasonal change from crop stress?</li>
+    <li>What additional field observations would you need before interpreting a low vegetation index as a problem?</li>
+  </ul>
+</body>
+</html>

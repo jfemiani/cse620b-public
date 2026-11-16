@@ -133,6 +133,15 @@
     ]
   },
   {
+    "slug": "agricultural-remote-sensing",
+    "title": "Agricultural Remote Sensing",
+    "summary": "Use crop reflectance and mapped field classes to reason about agricultural monitoring.",
+    "notes": "notes/agricultural-remote-sensing.html",
+    "lesson": "06-Image-Classification-and-Land-Cover",
+    "slides": [],
+    "demos": []
+  },
+  {
     "slug": "forestry-and-vegetation",
     "title": "Forestry and Vegetation",
     "summary": "Connect forest management questions to optical, lidar, radar, and field observations.",
