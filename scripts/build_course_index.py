@@ -84,6 +84,16 @@ def demo_cards(topic: dict, prefix: str) -> str:
     return "".join(cards) or '<p class="empty">Demos have not been published for this topic.</p>'
 
 
+def lab_cards(topic: dict, prefix: str) -> str:
+    cards = []
+    for lab in topic.get("labs", []):
+        resource = require_file(ROOT / lab["file"])
+        cards.append(card(lab["title"], [
+            action("Open activity", prefix + url(resource), embed=True),
+        ]))
+    return "".join(cards) or '<p class="empty">Labs have not been published for this topic. This site does not accept submissions.</p>'
+
+
 def page(topic: dict, topics: list[dict], *, home: bool = False) -> str:
     prefix = "" if home else "../"
     nav = "".join(
@@ -106,7 +116,7 @@ def page(topic: dict, topics: list[dict], *, home: bool = False) -> str:
         notes,
         slide_cards(topic, prefix),
         demo_cards(topic, prefix),
-        '<p class="empty">Labs have not been published for this topic. This site does not accept submissions.</p>',
+        lab_cards(topic, prefix),
         '<p class="empty">Practice quizzes are to be developed. They will be separate from Canvas assessments.</p>',
     )
     panels = "".join(

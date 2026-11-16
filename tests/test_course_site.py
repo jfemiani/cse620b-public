@@ -53,6 +53,7 @@ class CourseSiteTest(unittest.TestCase):
         pages = [ROOT / "index.html", ROOT / "presentation.html"]
         pages += list((ROOT / "pages").glob("*.html"))
         pages += list((ROOT / "notes").glob("*.html"))
+        pages += list((ROOT / "labs").glob("*.html"))
         for page in pages:
             for link in Document(page).links:
                 parsed = urlsplit(link)
@@ -85,6 +86,19 @@ class CourseSiteTest(unittest.TestCase):
             for index in range(5):
                 self.assertIn(f"tab-{index}", document.ids)
                 self.assertIn(f"panel-{index}", document.ids)
+
+    def test_agricultural_activity_appears_under_labs(self):
+        page = (ROOT / "pages" / "agricultural-remote-sensing.html").read_text(
+            encoding="utf-8"
+        )
+        panels = dict(re.findall(
+            r'<section role="tabpanel" id="panel-(\d+)"[^>]*>(.*?)</section>',
+            page,
+            re.DOTALL,
+        ))
+        activity_link = "../labs/agricultural-remote-sensing.html"
+        self.assertIn(f'href="{activity_link}" data-embed="true"', panels["3"])
+        self.assertNotIn(activity_link, panels["0"])
 
     def test_all_notebooks_have_download_and_colab_links(self):
         notebooks = {path.resolve() for path in (ROOT / "Lessons").rglob("*.ipynb")}

@@ -139,7 +139,13 @@
     "notes": "notes/agricultural-remote-sensing.html",
     "lesson": "06-Image-Classification-and-Land-Cover",
     "slides": [],
-    "demos": []
+    "demos": [],
+    "labs": [
+      {
+        "title": "Crop-label mapping: estimate crop composition",
+        "file": "labs/agricultural-remote-sensing.html"
+      }
+    ]
   },
   {
     "slug": "forestry-and-vegetation",

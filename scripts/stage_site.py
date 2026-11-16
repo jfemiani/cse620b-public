@@ -29,7 +29,7 @@ def main() -> None:
     DESTINATION.mkdir(exist_ok=True)
     for filename in ("index.html", "presentation.html"):
         shutil.copy2(ROOT / filename, DESTINATION / filename)
-    for directory in ("pages", "notes", "assets", "Lessons"):
+    for directory in ("pages", "notes", "labs", "assets", "Lessons"):
         shutil.copytree(ROOT / directory, DESTINATION / directory, dirs_exist_ok=True)
     for page in (DESTINATION / "Lessons").rglob("*.html"):
         prefix = Path(relpath(DESTINATION / "assets" / "vendor", page.parent)).as_posix() + "/"

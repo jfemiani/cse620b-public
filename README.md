@@ -5,11 +5,13 @@
 The [course site](https://jfemiani.github.io/cse620b-public/) organizes materials
 by topic in presentation order. Each topic has lecture notes, slides, demos,
 labs, and practice-quiz tabs. Materials open in the page; notebooks also have
-Colab and download links. Labs and practice quizzes are explicitly marked
-unavailable until authored. The site does not accept submissions or grades.
+Colab and download links. Topic notes live in `notes/`, and in-class activities
+live in `labs/`; categories without published resources are marked unavailable.
+The site does not accept submissions or grades.
 
 Topic order, public titles, and resource assignments live in `course.json`.
-Edit notes in `notes/`, rather than the generated topic pages in `pages/`.
+Edit notes in `notes/` and activities in `labs/`, rather than the generated
+topic pages in `pages/`.
 The original numbered Canvas-page URLs redirect to topic-named pages, so
 existing links continue to work. This changes the public website only, not
 the titles of live Canvas items.
