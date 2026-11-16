@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../assets/notes.css">
+  <title>Forestry and Vegetation</title>
+</head>
+<body>
+  <h1>Forestry and Vegetation</h1>
+  <p>A forest manager notices that one stand looks less green than it did last summer. The change might reflect drought, insects, harvest, or a difference in the images themselves. Remote sensing can help locate the change and measure its extent. Explaining its cause requires a comparison over time and evidence beyond a single vegetation index.</p>
+  <p>These notes accompany the <a href="../pages/forestry-and-vegetation.html#tab-1" target="_parent">revised forestry lecture slides</a>. By the end, you should be able to choose observations for a forest-management question, interpret vegetation and burn indices, and describe how field data can test a forest map.</p>
+
+  <h2>1. Start with the management question</h2>
+  <p>Forestry includes timber production, habitat management, carbon storage, water protection, recreation, and fire management. <dfn>Silviculture</dfn> is the establishment, growth, and management of forest stands. A <dfn>stand</dfn> is a contiguous area with sufficiently similar characteristics, such as age, species, or structure, to be managed as a unit.</p>
+  <p>The unit of analysis matters. A pixel is the ground area represented by one image cell; it can contain parts of several tree crowns and a gap. A stand contains many pixels. An individual-tree map, a stand-average canopy-height map, and a regional forest-cover estimate answer different questions, even when they use some of the same imagery.</p>
+  <ul>
+    <li>To locate forest-cover loss, compare images over time and evaluate the mapped changes.</li>
+    <li>To estimate canopy height, use lidar or suitable stereo imagery with a ground-elevation reference.</li>
+    <li>To estimate timber volume or biomass, combine remotely sensed predictors with field measurements and an evaluated model.</li>
+    <li>To assess fire effects, define whether the target is vegetation change, soil effects, or another measurable outcome.</li>
+  </ul>
+  <p>Keep the observation separate from the quantity being inferred. An optical instrument records radiation, lidar records laser returns, and radar records microwave echoes. Species, biomass, and forest condition are interpretations or model estimates based on those observations.</p>
+
+  <h2>2. Why green vegetation has a spectral signature</h2>
+  <p>Chlorophyll absorbs much of the red light incident on a healthy green leaf. Leaf structure scatters near-infrared light, abbreviated NIR, which lies just beyond visible red. This contrast helps distinguish green vegetation from many other surfaces.</p>
+  <figure>
+    <img src="https://raw.githubusercontent.com/jfemiani/cse620b-public/main/Lessons/11-Remote-Sensing-in-Forestry-and-Vegetation/slides/images/leaf-spectrum.png" alt="Schematic leaf spectrum showing low red reflectance and higher near-infrared reflectance." loading="lazy">
+    <figcaption>The lecture's schematic spectrum illustrates the red/NIR contrast. It is not a measured spectrum.</figcaption>
+  </figure>
+  <p>A forest pixel contains more than leaves. Crown density, branches, shadows, exposed soil, understory vegetation, and viewing direction all affect the recorded signal. Atmosphere and illumination add variation. Surface-reflectance products help account for atmospheric effects, but they do not remove every difference between acquisitions.</p>
+
+  <h3>Normalized Difference Vegetation Index</h3>
+  <p>The Normalized Difference Vegetation Index (NDVI) compares NIR and red reflectance. In Equation 1, the Greek letter rho denotes surface reflectance, a unitless fraction of incident radiation reflected by the surface in the specified band.</p>
+  <div style="display: flex; align-items: center; margin: 0.75rem 0;">
+    <div style="flex: 1 1 auto; min-width: 0; text-align: center; overflow-x: auto;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="Equation 1. NDVI equals near-infrared reflectance minus red reflectance, divided by their sum.">
+        <mrow><mi mathvariant="normal">NDVI</mi><mo>=</mo><mfrac><mrow><msub><mi>&rho;</mi><mtext>NIR</mtext></msub><mo>&minus;</mo><msub><mi>&rho;</mi><mtext>Red</mtext></msub></mrow><mrow><msub><mi>&rho;</mi><mtext>NIR</mtext></msub><mo>+</mo><msub><mi>&rho;</mi><mtext>Red</mtext></msub></mrow></mfrac></mrow>
+      </math>
+    </div>
+    <span style="width: 3.5rem; flex: 0 0 3.5rem; text-align: right;" aria-hidden="true">(1)</span>
+  </div>
+  <p>For red reflectance 0.10 and NIR reflectance 0.50, subtracting gives 0.40 and adding gives 0.60. NDVI is therefore about 0.67. This is consistent with green vegetation; it does not identify a tree species or establish the absence of stress.</p>
+  <p>Use bands from a consistent reflectance product and mask clouds, shadows, and invalid pixels. If reflectance is stored as integers, follow the product documentation to convert each value: multiply by the scale factor, then add the offset, before calculating the index. A zero denominator makes the ratio undefined. Very small denominators can make it unstable. Sensor band names differ, so select bands by their wavelength definitions rather than assuming a band number transfers between sensors.</p>
+  <p>NDVI can become less sensitive as vegetation becomes dense, a behavior called <dfn>saturation</dfn>. Two stands with different amounts of foliage can then have similar NDVI. Soil background and seasonal leaf development also affect the index. There is no universal NDVI threshold that diagnoses forest health.</p>
+
+  <h3>Leaf area and water-sensitive indices</h3>
+  <p><dfn>Leaf area index</dfn> (LAI) is commonly defined as one-sided green leaf area divided by ground area. For example, 300 square meters of leaf area above 100 square meters of ground gives LAI 3, expressed as square meters per square meter. Needleleaf forests require care about the leaf-area convention used. LAI describes canopy foliage and helps explain light interception; it is a different quantity from NDVI.</p>
+  <p>Estimating LAI from imagery requires a calibrated relationship or a physical model. A data-based workflow pairs representative field measurements with matching image observations, fits a relationship, and checks its errors on independent plots that were not used to fit it. A relationship learned in one forest type or season may give poor estimates elsewhere.</p>
+  <p>The simple ratio divides NIR reflectance by red reflectance and can be unstable when red reflectance is very small. The Normalized Difference Moisture Index (NDMI) uses the NIR-minus-shortwave-infrared contrast divided by their sum. Shortwave infrared (SWIR) is sensitive to water absorption, but NDMI also responds to canopy structure and scene composition. Treat these indices as evidence about surface conditions rather than direct measurements of a single plant property.</p>
+
+  <h2>3. Measure structure with lidar and radar</h2>
+  <p><dfn>Lidar</dfn> measures the travel time of emitted laser pulses to estimate distances. Combining those ranges with instrument position produces three-dimensional return locations. A pulse may yield returns from the upper canopy, lower vegetation, or ground through a gap. Dense foliage can prevent usable ground returns.</p>
+  <figure>
+    <img src="https://raw.githubusercontent.com/jfemiani/cse620b-public/main/Lessons/11-Remote-Sensing-in-Forestry-and-Vegetation/slides/images/lidar-returns.png" alt="Illustrative lidar returns at canopy, lower vegetation, and ground levels, showing how vertical forest structure can be sampled." loading="lazy">
+    <figcaption>This diagram is schematic, not an observed point cloud. Ground sampling depends on the canopy and acquisition.</figcaption>
+  </figure>
+  <p>A digital surface model (DSM) describes upper surfaces, including tree crowns. A digital terrain model (DTM) estimates ground elevation. If both use a compatible reference and grid, subtracting terrain elevation from surface elevation gives an approximate canopy-height model. A crown at elevation 142 meters over ground at 120 meters has an estimated height of 22 meters. A two-meter error in the ground estimate changes the height estimate by two meters.</p>
+  <p>Lidar can support canopy-height distributions, gap mapping, and descriptions of vertical layers. Individual-crown detection depends on point density, crown overlap, terrain, and forest type. Airborne surveys may cover an area densely; NASA's Global Ecosystem Dynamics Investigation (GEDI) samples discrete footprints along tracks. A footprint observation and a continuous map predicted from footprint samples are different products.</p>
+  <p><dfn>Synthetic aperture radar</dfn> (SAR) is an active microwave imaging system. It can acquire observations day or night and through cloud cover. Its <dfn>backscatter</dfn>, the microwave signal returned toward the sensor, depends on wavelength, vegetation structure, and moisture. Polarization describes the orientation of the wave's electric field; the transmitted and received polarizations also affect the signal. So does viewing geometry, including the angle between the radar beam and the ground. Longer wavelengths can interact with larger woody components, but sensitivity varies with forest conditions and can saturate. Radar does not simply reveal everything beneath a canopy.</p>
+  <p>Use complementary observations when the question requires them. Optical imagery describes spectral and seasonal patterns; lidar describes vertical structure; SAR offers cloud-independent observations sensitive to structure and moisture. Field plots provide reference measurements for evaluating estimates from all three.</p>
+
+  <h2>4. Build and evaluate a forest inventory</h2>
+  <p>A field plot may record species, tree counts, diameter at breast height (DBH), tree height, condition, location, and date. Biomass and volume are often estimated from these measurements using <dfn>allometric models</dfn>, relationships between tree dimensions and attributes that are difficult to measure directly. The resulting plot estimates also carry uncertainty.</p>
+  <ol>
+    <li>Define the target and reporting unit, such as aboveground biomass per hectare for each stand.</li>
+    <li>Sample plots that represent the forest types and conditions where the map will be used.</li>
+    <li>Match plot boundaries, dates, and locations to image or lidar measurements. Check location error and differences in spatial support, meaning the area represented by each measurement.</li>
+    <li>Fit the prediction model using a development set of plots.</li>
+    <li>Evaluate on independent plots or held-out spatial areas, then report errors, bias, and the conditions the evaluation covers.</li>
+  </ol>
+  <p>Nearby plots can resemble each other, so randomly splitting neighboring samples may make a model appear more transferable than it is. Hold out locations appropriate to the intended use. Report both the size of typical errors and whether predictions systematically overestimate or underestimate the target. A map that performs well in one region has not automatically been validated for another.</p>
+  <p>Species and crown mapping have similar limits. Spectral response, crown form, and seasonal behavior can help separate species, but shadows and overlapping crowns obscure individual trees. Understory plants may compete with young trees for resources while remaining difficult to observe beneath a closed canopy. Even lidar only describes lower layers where returns sample them.</p>
+
+  <h2>5. Interpret forest change over time</h2>
+  <p>Return to the stand with lower NDVI. First check whether both images represent the same stage of the growing season. Next check clouds, shadows, haze, image alignment (registration), and processing differences. A shift in the alignment of a pixel near a stand boundary can change its mixture of trees and bare ground without any tree changing.</p>
+  <p>A seasonal or multiyear time series gives a baseline for deciding whether the observation is unusual. Persistent decline across several comparable dates is different evidence from one low value. Spatial patterns can guide field visits: a sharp boundary may match a harvest unit, while a wider pattern may be consistent with regional drought. Neither pattern proves its cause. Compare field observations and independent records before assigning a disturbance label.</p>
+
+  <h2>6. Fire detection, effects, and recovery</h2>
+  <p>Before a fire, managers may need fuel and vegetation-structure information. During a fire, thermal observations help detect active burning. Afterward, spectral comparisons can locate changed surfaces, while later time series describe recovery. These tasks require different measurements and evaluation targets.</p>
+  <p>MODIS and VIIRS active-fire products identify thermal anomalies using several tests. A detection indicates a hot signal within a sensor footprint. It is not a precise fire perimeter or a direct measure of all burned area. Clouds, overpass timing, and small or cool fires can cause missed detections.</p>
+
+  <h3>Normalized Burn Ratio and its change</h3>
+  <p>The Normalized Burn Ratio (NBR) compares NIR reflectance with reflectance in a longer-wavelength SWIR band, often called SWIR2. Select the sensor's band near 2.2 micrometers using its product documentation; band numbers and labels differ between sensors. Vegetation loss and changes to exposed surfaces can alter this contrast.</p>
+  <div style="display: flex; align-items: center; margin: 0.75rem 0;">
+    <div style="flex: 1 1 auto; min-width: 0; text-align: center; overflow-x: auto;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="Equation 2. NBR equals near-infrared reflectance minus SWIR2 reflectance, divided by their sum.">
+        <mrow><mi mathvariant="normal">NBR</mi><mo>=</mo><mfrac><mrow><msub><mi>&rho;</mi><mtext>NIR</mtext></msub><mo>&minus;</mo><msub><mi>&rho;</mi><mtext>SWIR2</mtext></msub></mrow><mrow><msub><mi>&rho;</mi><mtext>NIR</mtext></msub><mo>+</mo><msub><mi>&rho;</mi><mtext>SWIR2</mtext></msub></mrow></mfrac></mrow>
+      </math>
+    </div>
+    <span style="width: 3.5rem; flex: 0 0 3.5rem; text-align: right;" aria-hidden="true">(2)</span>
+  </div>
+  <p>In words, NBR is NIR minus SWIR2 reflectance, divided by their sum. Calculate differenced NBR (dNBR) by subtracting post-fire NBR from pre-fire NBR:</p>
+  <div style="display: flex; align-items: center; margin: 0.75rem 0;">
+    <div style="flex: 1 1 auto; min-width: 0; text-align: center; overflow-x: auto;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="Equation 3. Differenced NBR equals pre-fire NBR minus post-fire NBR.">
+        <mrow><mi mathvariant="normal">dNBR</mi><mo>=</mo><msub><mi mathvariant="normal">NBR</mi><mtext>pre-fire</mtext></msub><mo>&minus;</mo><msub><mi mathvariant="normal">NBR</mi><mtext>post-fire</mtext></msub></mrow>
+      </math>
+    </div>
+    <span style="width: 3.5rem; flex: 0 0 3.5rem; text-align: right;" aria-hidden="true">(3)</span>
+  </div>
+  <p>If NBR decreases from 0.60 to 0.10, dNBR is 0.50. With this convention, a larger positive value often indicates greater fire-related spectral change. The numerical example is illustrative, not an observation or a universal severity threshold. Products may store scaled integer values, so check units before applying any published threshold.</p>
+  <p>Use registered, cloud-masked images from comparable seasonal conditions. Specify the interval after the fire because early effects and later vegetation responses differ. Check the relationship between dNBR and the field attribute of interest before labeling severity classes.</p>
+  <p><dfn>Fire intensity</dfn> describes energy release during burning. <dfn>Fire severity</dfn> describes effects on a specified attribute, such as vegetation or soil. A post-fire spectral index measures neither energy release nor soil damage directly. Similarly, recovered greenness does not demonstrate recovery of the original tree species, canopy structure, or carbon stock.</p>
+
+  <h2>7. Check your interpretation</h2>
+  <p>Suppose the stand's NDVI has declined, a nearby stand has not, and there is no recorded fire. Before recommending management action, explain what you would do next:</p>
+  <ul>
+    <li>Which acquisition and seasonal differences would you rule out?</li>
+    <li>Would canopy-height observations help distinguish vegetation removal from a change in leaf condition? What if the lidar survey predates the suspected event?</li>
+    <li>What field observations would help separate drought, insects, and harvest?</li>
+    <li>Would you report results by pixel or by stand, and how would you describe uncertainty?</li>
+  </ul>
+  <p>A defensible report names the measured signal, the inferred forest attribute, and the independent evidence used to check the inference. Include observation dates, spatial units, and limits on where the interpretation applies.</p>
+
+  <h2>Sources and further reading</h2>
+  <p>The <a href="../Lessons/11-Remote-Sensing-in-Forestry-and-Vegetation/slides/forestry-and-vegetation.pdf">lecture PDF</a> follows the same sequence. Its <a href="https://github.com/jfemiani/cse620b-public/blob/main/Lessons/11-Remote-Sensing-in-Forestry-and-Vegetation/slides/SOURCES.md">source list and diagram notes</a> document the accompanying illustrations.</p>
+  <ul>
+    <li><a href="https://www.usgs.gov/landsat-missions/landsat-normalized-difference-vegetation-index">USGS: Landsat NDVI</a>, including the reflectance-band definition.</li>
+    <li><a href="https://www.usgs.gov/special-topics/remote-sensing-phenology/science/ndvi-foundation-remote-sensing-phenology">USGS: NDVI and phenology</a>, for seasonal interpretation and limitations.</li>
+    <li><a href="https://gedi.umd.edu/">NASA GEDI mission</a>, for spaceborne forest-structure observations.</li>
+    <li><a href="https://www.usgs.gov/landsat-missions/landsat-normalized-burn-ratio">USGS: Landsat NBR</a>, for the burn-index definition.</li>
+    <li><a href="https://burnseverity.cr.usgs.gov/glossary">USGS: Burn-severity glossary</a>, for distinctions between fire intensity and effects.</li>
+    <li><a href="https://firms.modaps.eosdis.nasa.gov/">NASA FIRMS</a>, for active-fire observations and product information.</li>
+  </ul>
+</body>
+</html>

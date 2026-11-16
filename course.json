@@ -151,6 +151,7 @@
     "slug": "forestry-and-vegetation",
     "title": "Forestry and Vegetation",
     "summary": "Connect forest management questions to optical, lidar, radar, and field observations.",
+    "notes": "notes/forestry-and-vegetation.html",
     "lesson": "11-Remote-Sensing-in-Forestry-and-Vegetation",
     "slides": [
       {"title": "Remote sensing of forests and vegetation", "file": "slides/forestry-and-vegetation.pdf"}
