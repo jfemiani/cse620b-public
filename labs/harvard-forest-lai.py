@@ -6,229 +6,153 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.19.5
+#       jupytext_version: 1.19.6
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
 
-# %% [markdown]
-# # Can satellite indices track leaf area at Harvard Forest?
+# %% [markdown] id="12aee42f"
+# # Can satellites tell how leafy a forest is?
 #
-# **In class: 25–30 minutes.** Use real optical and radar images from the
-# Prospect Hill tract, Massachusetts, and field measurements from the
-# Environmental Measurement Site (EMS). Leaf area index (LAI) is leaf area
-# per unit ground area. Here the response is the published site mean from
-# field-instrument readings, not a satellite LAI estimate.
+# **Ungraded in-class lab · 25–30 minutes · Work in small groups**
 #
-# 1. Download image chips and field records. Inspect a date and mask.
-# 2. Compute indices per pixel, then summarize them for each date.
-# 3. Compare correlations using 2022–2023. Fit `LAI = intercept + slope × index`.
-# 4. Test on 2024 dates. Compare with predicting the training mean every time.
+# Compare satellite images of Harvard Forest with measurements of leaf area taken on the ground. Your group will calculate one optical index and one radar index, then test how well each predicts leaf area on three visits in 2024.
 #
-# The one observation per row is a **site-date**, not a pixel or an
-# individual field plot. We have only three held-out dates, so this is a
-# classroom comparison of seasonal relationships, not a validation for
-# another forest or a definitive ranking of sensors.
+# Run the setup and image cells first. Write your own code in the two **Your turn** cells. If you want to check your work, use the [worked key](https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/labs/harvard-forest-lai-key.ipynb) after class.
+#
+# ## 1. Download the data
+#
+# The ZIP contains small satellite images with the original bands on a common 20 m grid. The CSV contains the field measurements.
 
-# %%
-from io import BytesIO
-from pathlib import Path
-from zipfile import ZipFile
-import os
+# %% id="0b2654f0" outputId="f7f8975d-cd0d-441f-b774-dcb3d199181e" colab={"base_uri": "https://localhost:8080/"} language="bash"
+# set -e
+# wget -nv -O harvard-forest-chips.zip https://vision.csi.miamioh.edu/data/cse620b/forestry/harvard-forest-chips.zip
+# unzip -oq harvard-forest-chips.zip -d harvard-forest
+# wget -nv -O lai.csv https://harvardforest1.fas.harvard.edu/data/p06/hf069/hf069-02-lai-site.csv
 
+# %% [markdown] id="d67e4f76"
+# ## 2. Find the study area
+#
+# These color views show the same 1.2 km-wide area at Harvard Forest's Prospect Hill tract in Massachusetts. The white outline marks the approximate field survey area, where transects run west of the Environmental Measurement Site (EMS) tower. It covers roughly the western half of a 500 m radius around the tower.
+#
+# **Look first.** Where does the forest change most between June and November? Which changes might a radar image pick up?
+
+# %% id="84560b78" outputId="858240a1-c665-4c57-f226-44150e424579" colab={"base_uri": "https://localhost:8080/", "height": 428}
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import requests
-from IPython.display import display
 
-CHIPS_URL = "https://vision.csi.miamioh.edu/data/cse620b/forestry/harvard-forest-chips.zip"
-LAI_URL = "https://harvardforest1.fas.harvard.edu/data/p06/hf069/hf069-02-lai-site.csv"
+footprint = np.load("harvard-forest/footprint.npy")
 
-# %% [markdown]
-# ## 1. Retrieve the inputs
+def load_bands(visit):
+    with np.load(f"harvard-forest/{visit}.npz") as chip:
+        return dict(chip)
+
+def show_rgb(ax, bands):
+    rgb = np.dstack([bands["B04"], bands["B03"], bands["B02"]])
+    ax.imshow(np.clip(rgb * 4, 0, 1))
+    ax.contour(footprint, levels=[0.5], colors="white", linewidths=1)
+    ax.set_axis_off()
+
+fig, axes = plt.subplots(1, 2, figsize=(8, 4), layout="constrained")
+for ax, visit, label in zip(
+    axes,
+    ["2023-06-05", "2023-11-07"],
+    ["June 11, 2023", "November 8, 2023"],
+):
+    show_rgb(ax, load_bands(visit))
+    ax.set_title(label)
+plt.show()
+
+# %% [markdown] id="07f81a24"
+# ## 3. Read and display the source bands
 #
-# The image archive contains actual Sentinel-2 L2A (RGB, near-infrared,
-# shortwave infrared, and scene classification) and Sentinel-1 RTC
-# (terrain-corrected radar) pixels on a shared 20 m grid. Nothing in the
-# archive is a precomputed index. The scene table records full scene IDs
-# and acquisition dates; images are within ten days of the field visit.
-# The approximate sampling footprint covers the
-# western half of a 500 m radius around the tower, where the survey transects
-# run. It is not a map of exact plot boundaries.
+# Each band is a 2D array. Sentinel-2 values are surface reflectance. Sentinel-1 values are linear radar backscatter power. This radar series has **VV** and **VH**. The letters give the transmit and receive polarizations, respectively. **HH** (horizontal transmit and receive) and **HV** are other possible channels. The archive does not carry them.
+#
+# Run the cell to see each band and the values of one pixel. The color scale is set separately for each band. Use its colorbar when comparing values. Try changing the visit to `"2023-11-07"`. What changes in red and near-infrared? What changes in VV and VH?
 
-# %%
-if "FORESTRY_CHIPS_DIR" in os.environ:
-    directory = Path(os.environ["FORESTRY_CHIPS_DIR"])
-else:
-    directory = Path("harvard-forest")
-    response = requests.get(CHIPS_URL, timeout=60)
-    response.raise_for_status()
-    with ZipFile(BytesIO(response.content)) as archive:
-        archive.extractall(directory)
+# %% id="c199e5c7" outputId="92ff73ce-374a-4b6a-c4eb-55f2bac1534a" colab={"base_uri": "https://localhost:8080/", "height": 671}
+visit = "2023-06-05"  # Date of the field visit used to name the image file
+bands = load_bands(visit)
+band_names = {
+    "Red (B04)": "B04", "Green (B03)": "B03", "Blue (B02)": "B02",
+    "NIR (B08)": "B08", "SWIR 1 (B11)": "B11", "SWIR 2 (B12)": "B12",
+    "VV": "VV", "VH": "VH",
+}
 
-response = requests.get(LAI_URL, timeout=30)
-response.raise_for_status()
-field = pd.read_csv(BytesIO(response.content), parse_dates=["date"])
-field = field.loc[field.site.eq("ems"), ["date", "n_plots", "all_mean"]]
+fig, axes = plt.subplots(2, 4, figsize=(13, 6), layout="constrained")
+for ax, (label, band) in zip(axes.flat, band_names.items()):
+    image = ax.imshow(bands[band], cmap="gray")
+    ax.contour(footprint, levels=[0.5], colors="cyan", linewidths=0.8)
+    ax.set_title(label)
+    ax.set_axis_off()
+    fig.colorbar(image, ax=ax, shrink=0.7)
+plt.show()
+
+row, col = 30, 20
+print(f"Pixel at row {row}, column {col}")
+for label, band in band_names.items():
+    print(f"{label}: {bands[band][row, col]:.4f}")
+
+# %% [markdown] id="010b5e24"
+# ## 4. Match satellite images to field measurements
+#
+# **Leaf area index (LAI)** is leaf area per unit of ground area. The table gives the mean LAI across the plots measured on each field visit and the dates of the paired optical and radar images. A field visit gives you one LAI value. To compare it with an index map, you will need to reduce the pixels to one index value for that visit.
+#
+# Find the June and November visits. Do the measured LAI values agree with your impression from the color images?
+
+# %% id="079093a5" outputId="53562c89-8806-4066-930e-9a340a216c61" colab={"base_uri": "https://localhost:8080/", "height": 426}
+field = pd.read_csv("lai.csv")
+field = field.loc[field["site"] == "ems", ["date", "n_plots", "all_mean"]]
 field = field.rename(columns={"date": "field_date", "all_mean": "LAI"})
-scene_dates = ["field_date", "optical_date", "radar_date"]
-scenes = pd.read_csv(directory / "scenes.csv", parse_dates=scene_dates)
-matched = scenes.merge(field, on="field_date", validate="one_to_one")
-if len(matched) != len(scenes) or matched.LAI.isna().any():
-    raise ValueError("A scene date is missing its EMS LAI measurement.")
+scenes = pd.read_csv("harvard-forest/scenes.csv")
+visits = scenes.merge(field, on="field_date", validate="one_to_one")
+display(visits[["field_date", "optical_date", "radar_date", "n_plots", "LAI"]])
 
-footprint = np.load(directory / "footprint.npy")
-display(matched[scene_dates + ["n_plots", "LAI", "common_pixels"]])
-
-# %% [markdown]
-# ## 2. Compute comparable indices
-#
-# Sentinel-2: red = B04, near-infrared = B08, SWIR1 = B11, and SWIR2 = B12.
-# The chips are already in surface reflectance units. SWIR1 is used for
-# NDMI and the reduced simple ratio (RSR); SWIR2 is used for NBR. Fix the
-# RSR SWIR1 limits using the 2nd and 98th percentiles of usable **training**
-# pixels and clip the adjustment to [0, 1], so every date uses the same
-# scale. This is a classroom calibration, not the spruce study's limits.
-#
-# The regular radar series has **VV and VH**, not **HH and HV**. Thus
-# `VV/VH` and `(VH − VV)/(VH + VV)` are analogues of the slide deck's
-# RRVI and RRNDVI, **not the original indices**. Also calculate the
-# dual-pol RVI `4 VH/(VV + VH)`. Use linear backscatter power, not dB.
-# With this definition RVI equals twice the normalized radar difference
-# plus two, so their Pearson correlations must be identical. With
-# `tau = 1`, the deck's VH/VV RDPI is RVI divided by four. Try another
-# positive value of `tau` and compare the results; the input bands stay
-# the same.
-#
-# Keep only SCL class 4 (vegetation) and positive, finite band values
-# inside the footprint. Use the same usable pixels for every index on a
-# given date. The mask can vary by date.
-
-# %%
-def load_chip(field_date):
-    with np.load(directory / f"{field_date:%Y-%m-%d}.npz") as file:
-        bands = dict(file)
+def usable_pixels(bands):
+    # Class 4 means vegetation in the Sentinel-2 scene classification.
     valid = footprint & (bands["SCL"] == 4)
-    for band in bands.values():
-        valid &= np.isfinite(band) & (band > 0)
-    return bands, valid
+    for band in band_names.values():
+        valid &= np.isfinite(bands[band]) & (bands[band] > 0)
+    return valid
 
-
-train_dates = matched.loc[matched.field_date.dt.year.lt(2024), "field_date"]
-train_swir = []
-for field_date in train_dates:
-    bands, valid = load_chip(field_date)
-    train_swir.append(bands["B11"][valid])
-lo, hi = np.percentile(np.concatenate(train_swir), [2, 98])
-
-
-def indices(bands):
-    # Apply only to the common valid pixels, so denominators are positive.
-    red, nir, swir1, swir2 = (bands[k] for k in ("B04", "B08", "B11", "B12"))
-    vv, vh = bands["VV"], bands["VH"]
-    sr = nir / red
-    tau = 1.0
-    return {
-        "SR": sr,
-        "NDVI": (nir - red) / (nir + red),
-        "NDMI": (nir - swir1) / (nir + swir1),
-        "RSR": sr * (1 - np.clip((swir1 - lo) / (hi - lo), 0, 1)),
-        "NBR": (nir - swir2) / (nir + swir2),
-        "VV/VH": vv / vh,
-        "Radar ND": (vh - vv) / (vh + vv),
-        "Dual-pol RVI": 4 * vh / (vv + vh),
-        "RDPI": vh / (vh + tau * vv),
-    }
-
-# %% [markdown]
-# Examine one chip. The RGB image includes areas outside the sampling
-# footprint. Blank pixels in the two index maps are excluded from analysis.
-# Change `example` to see another date. Can you spot water, breaks in
-# vegetation, or radar speckle?
-
-# %%
-example = matched.iloc[len(matched) // 2].field_date
-bands, valid = load_chip(example)
-rgb = np.stack([bands[key] for key in ("B04", "B03", "B02")], axis=-1)
-fig, ax = plt.subplots(1, 3, figsize=(11, 3.5), layout="constrained")
-ax[0].imshow(np.nan_to_num(np.clip(rgb * 4, 0, 1)))
-ax[0].set_title(f"RGB near {example:%Y-%m-%d}")
-values = indices({key: value[valid] for key, value in bands.items()})
-for panel, name in zip(ax[1:], ("NDVI", "Dual-pol RVI")):
-    layer = np.full(valid.shape, np.nan)
-    layer[valid] = values[name]
-    fig.colorbar(panel.imshow(layer, cmap="viridis"), ax=panel, shrink=0.72)
-    panel.set_title(name)
-for panel in ax:
-    panel.set_axis_off()
-plt.show()
-
-# %% [markdown]
-# ## 3. Rank indices on the training dates
+# %% [markdown] id="8d950e1f"
+# ## 5. Your turn · Calculate two indices
 #
-# Use the pixel median as the summary for each site-date. Pearson's **r**
-# measures the direction and strength of a linear association. Compare
-# `abs(r)` to rank strength, but keep the sign to discuss direction.
-# Pick an optical index and a radar index to compare.
-
-# %%
-summaries = []
-for field_date in matched.field_date:
-    bands, valid = load_chip(field_date)
-    values = indices({key: value[valid] for key, value in bands.items()})
-    summaries.append({name: np.median(pixels) for name, pixels in values.items()})
-
-table = pd.concat([matched, pd.DataFrame(summaries)], axis=1)
-train = table.loc[table.field_date.dt.year.lt(2024)]
-test = table.loc[table.field_date.dt.year.eq(2024)]
-index_names = list(summaries[0])
-r = train[index_names].corrwith(train.LAI).sort_values(key=abs, ascending=False)
-print(f"{len(train)} training and {len(test)} held-out site-dates")
-display(r.rename("Training Pearson r").round(3).to_frame())
-
-# %% [markdown]
-# ## 4. Fit a spruce-style one-index model
+# 1. Pick one optical index and one radar index. For example, start with NDVI and a ratio of the two radar channels. Write down the formulas your group chose.
+# 2. Implement the formulas with the source arrays. Make a map of each index for one visit. Use `usable_pixels(bands)` to keep the same pixels in both maps. Use `np.nan` for masked pixels when plotting.
+# 3. Repeat for every date in `visits["field_date"]`. For each index, take the median over the usable pixels. Add the two summaries as columns in a copy of `visits`, with one row per visit.
 #
-# Set `predictor` from the training table. Fit on 2022–2023 only, then use
-# the same equation to predict 2024 LAI. Record the slope, test RMSE (in LAI
-# units), and whether it beats the training-mean baseline. Repeat with an
-# index from the other sensor. Use 2024 for comparison, not for tuning the
-# prediction rule.
+# The index maps will look roughly semicircular when you mask them. The cyan outline in the source-band plots shows where that shape comes from. Gaps inside it are pixels that fail the vegetation or validity checks.
 
-# %%
-predictor = "NDVI"  # Change this to compare an optical and a radar model.
-slope, intercept = np.polyfit(train[predictor], train.LAI, 1)
-predicted = intercept + slope * test[predictor]
-rmse = np.sqrt(np.mean((predicted - test.LAI) ** 2))
-baseline = np.sqrt(np.mean((train.LAI.mean() - test.LAI) ** 2))
-print(f"Predicted LAI = {intercept:.2f} + ({slope:.2f}) × {predictor}")
-print(f"2024 RMSE: {rmse:.2f}; training-mean baseline RMSE: {baseline:.2f}")
+# %% id="419e17f8"
+# Write your code here.
+# Start with the bands from one visit and check the two index maps.
+# Then build a table with both index summaries and LAI for each visit.
 
-x = np.linspace(table[predictor].min(), table[predictor].max(), 100)
-plt.scatter(train[predictor], train.LAI, label="2022–2023 fit data")
-plt.scatter(test[predictor], test.LAI, marker="D", label="2024 held out")
-plt.plot(x, intercept + slope * x, label="Training fit")
-plt.xlabel(predictor)
-plt.ylabel("Field-measured site mean LAI")
-plt.legend()
-plt.show()
-
-# %% [markdown]
-# ## Discuss
+# %% [markdown] id="e6ed452e"
+# ## 6. Your turn · Fit and test your models
 #
-# - Which index was strongest in training? Did its slope and error on 2024
-#   support the same interpretation? Did either model beat the baseline?
-# - Why do some radar indices give the same training correlation?
-# - The radar and optical scenes are not always from the field date. How
-#   could a wet canopy or quick spring leaf-out change the comparison?
-# - Would a relationship driven by spring and autumn work equally well
-#   across stands observed on the same midsummer date? What measurements
-#   would you need to test that?
+# 1. Use the **2022–2023** rows to fit a separate line for each index. Use the index as x and measured LAI as y. Estimate the slope and intercept for each line. Hint: `np.polyfit` with degree 1 fits a straight line.
+# 2. Use each fitted line to predict LAI from the index values for the three **2024** visits. Put the two predictions and measured LAI side by side for each date.
+# 3. Compare the models' root mean squared errors (RMSE) with a baseline that predicts the 2022–2023 mean LAI for every 2024 visit. Keep the 2024 rows out of the fitting step.
+
+# %% id="4e4a70ff"
+# Write your code here.
+# Split the visits by year, fit two lines, and compare their predictions
+# with measured LAI and the baseline on the three 2024 visits.
+
+# %% [markdown] id="17e1d259"
+# ## Share your results
+#
+# Tell another group which indices you chose and whether either model beat the baseline. Which visit was hardest to predict? Check how far apart the field and satellite dates were. How could rapid leaf-out or a wet canopy affect the result?
+#
+# All three test dates come from the same forest. What measurements would you need to test whether either index can distinguish two stands with different LAI on the same day?
 #
 # ## Data and worked examples
+#
 #
 # - [Harvard Forest HF069: Biomass Inventories at the EMS Tower](https://harvardforest1.fas.harvard.edu/exist/apps/datasets/showData.html?id=hf069).
 #   Uses the `ems` rows of the published site LAI table, not a gridded LAI product.
