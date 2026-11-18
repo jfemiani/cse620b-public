@@ -106,6 +106,7 @@ import numpy as np
 import rasterio
 from rasterio.warp import transform
 from skimage.segmentation import find_boundaries
+from skimage.transform import resize
 
 bands = {
     "B01": {"name": "Coastal aerosol", "id": "0", "wavelength_nm": 443, "resolution": "60 m"},
@@ -271,13 +272,16 @@ plt.show()
 # SCL pixels change class in the matching June 11 Level-2A product. The
 # classification crop covers only the central 1.2 km, so this panel zooms
 # to that overlap. Both layers are drawn in the same UTM coordinates.
+# Nearest-neighbor resizing to 800 × 800 keeps the class codes intact.
+# Finding edges on that finer display grid gives thinner outlines.
 
 # %%
 with rasterio.open("sentinel-2-l2a-demo/SCL.tif") as src:
     labels = src.read(1)
     left, bottom, right, top = src.bounds
     assert src.crs == chip_crs
-edges = find_boundaries(labels, mode="thick")
+display_labels = resize(labels, (800, 800), order=0, anti_aliasing=False)
+edges = find_boundaries(display_labels, mode="thick")
 
 fig, ax = plt.subplots(figsize=(5, 5), layout="constrained")
 ax.imshow(rgb_display, extent=extent)

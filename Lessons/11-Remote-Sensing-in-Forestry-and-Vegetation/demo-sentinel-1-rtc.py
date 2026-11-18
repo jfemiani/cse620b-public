@@ -49,6 +49,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
 from skimage.segmentation import find_boundaries
+from skimage.transform import resize
 
 # %% [markdown]
 # ## Read a small window from each raster
@@ -101,13 +102,17 @@ plt.show()
 # June 11 optical image, six days after the June 5 radar acquisition. This
 # overlay gives spatial context, not same-day radar labels. The Greenland
 # scene has no matching SCL in this demo, so it remains unannotated.
+# Upsampling the labels to 800 × 800 with nearest neighbor before finding
+# boundaries makes the outlines thinner without changing the class codes.
 
 # %%
 with rasterio.open("sentinel-2-l2a-demo/SCL.tif") as src:
     assert (src.crs, src.bounds) == grids["vv"] == grids["vh"]
-    edges = find_boundaries(src.read(1), mode="thick")
+    labels = src.read(1)
     left, bottom, right, top = src.bounds
 
+display_labels = resize(labels, (800, 800), order=0, anti_aliasing=False)
+edges = find_boundaries(display_labels, mode="thick")
 extent = (left, right, bottom, top)
 fig, axes = plt.subplots(1, 2, figsize=(7, 4), layout="constrained")
 for ax, polarization in zip(axes, ("vv", "vh")):

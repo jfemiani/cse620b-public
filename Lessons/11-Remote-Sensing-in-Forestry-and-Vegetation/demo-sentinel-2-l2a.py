@@ -34,6 +34,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
 from skimage.segmentation import find_boundaries
+from skimage.transform import resize
 
 # %% [markdown]
 # ## What the bands measure
@@ -123,11 +124,13 @@ plt.show()
 #
 # `find_boundaries` marks where neighboring SCL labels differ. Yellow pixels
 # show those transitions, not a particular class. The RGB and SCL crops
-# cover the same rectangle, but SCL pixels are twice as wide. The overlay
-# keeps the categorical edges sharp rather than interpolating them.
+# cover the same rectangle. Resize the SCL labels to 800 × 800 with nearest
+# neighbor before finding boundaries so the outlines are thinner and no
+# new class codes are introduced.
 
 # %%
-edges = find_boundaries(images["SCL"].filled(0), mode="thick")
+display_labels = resize(images["SCL"].filled(0), (800, 800), order=0, anti_aliasing=False)
+edges = find_boundaries(display_labels, mode="thick")
 fig, axes = plt.subplots(1, 2, figsize=(7, 4), layout="constrained")
 for ax, title in zip(axes, ("Natural color", "With SCL boundaries")):
     ax.imshow(np.clip(rgb / 0.22, 0, 1), extent=(0, 1200, 0, 1200))
