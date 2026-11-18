@@ -13,6 +13,9 @@
 #     name: python3
 # ---
 
+# %% [markdown] id="view-in-github" colab_type="text"
+# <a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/labs/harvard-forest-lai.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+
 # %% [markdown] id="12aee42f"
 # # Can satellites tell how leafy a forest is?
 #
@@ -24,7 +27,16 @@
 #
 # ## 1. Download the data
 #
-# The ZIP contains small satellite images with the original bands on a common 20 m grid. The CSV contains the field measurements.
+# The download is under 1 MB. The satellite rasters were cropped and aligned in advance so you can calculate indices in Colab without opening full satellite scenes or installing GIS software.
+#
+# | File | What's inside |
+# |---|---|
+# | `YYYY-MM-DD.npz` | One file per **field visit**. A compressed bundle of nine named NumPy arrays: six Sentinel-2 reflectance bands, the Sentinel-2 scene classification (`SCL`), and two Sentinel-1 radar bands. Each array is **60 rows × 60 columns** on the same 20 m grid. |
+# | `footprint.npy` | One **60 × 60 Boolean array**, reused on every date. `True` means the pixel center is in the approximate field sampling area. |
+# | `scenes.csv` | One row per matched visit, with the field date, both satellite dates, and the original scene IDs. |
+# | `grid.json` | The coordinate reference system (UTM zone 18N), pixel-to-map transform, grid shape, and tower coordinates. |
+#
+# `.npy` stores one array and preserves its shape and data type; `.npz` bundles multiple named arrays. Unlike GeoTIFF, these arrays don't carry map coordinates on their own. That's why `grid.json` is separate. The field measurements come from Harvard Forest as a separate CSV, not as an image.
 
 # %% id="0b2654f0" outputId="f7f8975d-cd0d-441f-b774-dcb3d199181e" colab={"base_uri": "https://localhost:8080/"} language="bash"
 # set -e
@@ -35,7 +47,7 @@
 # %% [markdown] id="d67e4f76"
 # ## 2. Find the study area
 #
-# These color views show the same 1.2 km-wide area at Harvard Forest's Prospect Hill tract in Massachusetts. The white outline marks the approximate field survey area, where transects run west of the Environmental Measurement Site (EMS) tower. It covers roughly the western half of a 500 m radius around the tower.
+# These color views show the same 1.2 km-wide area at Harvard Forest's Prospect Hill tract in Massachusetts. North is up and west is left. The white outline marks pixels whose centers are west of the Environmental Measurement Site (EMS) tower and within 500 m of it. The half-circle approximates the area sampled by field transects; it is **not** a map of individual plots or the tower's atmospheric footprint. The outline stays fixed; clouds and invalid pixels can change which pixels you use on each date.
 #
 # **Look first.** Where does the forest change most between June and November? Which changes might a radar image pick up?
 
@@ -48,10 +60,12 @@ footprint = np.load("harvard-forest/footprint.npy")
 
 def load_bands(visit):
     with np.load(f"harvard-forest/{visit}.npz") as chip:
+        # Read the named arrays before closing the archive.
         return dict(chip)
 
 def show_rgb(ax, bands):
     rgb = np.dstack([bands["B04"], bands["B03"], bands["B02"]])
+    # Brighten for display only; index calculations use the original values.
     ax.imshow(np.clip(rgb * 4, 0, 1))
     ax.contour(footprint, levels=[0.5], colors="white", linewidths=1)
     ax.set_axis_off()
@@ -99,7 +113,11 @@ for label, band in band_names.items():
 # %% [markdown] id="010b5e24"
 # ## 4. Match satellite images to field measurements
 #
-# **Leaf area index (LAI)** is leaf area per unit of ground area. The table gives the mean LAI across the plots measured on each field visit and the dates of the paired optical and radar images. A field visit gives you one LAI value. To compare it with an index map, you will need to reduce the pixels to one index value for that visit.
+# **Leaf area index (LAI)** is leaf area per unit of ground area (m² of leaf per m² of ground). Harvard Forest's HF069 project tracks vegetation at the EMS tower. It publishes both plot-level measurements (`hf069-01`) and site-level summaries (`hf069-02`). We use the site-level table, which has one row per site and survey date.
+#
+# `site` identifies the sampling site; we keep `ems`. `date` is the field survey date, `n_plots` counts the sampled plots, and `all_mean` is the mean total LAI across plots. The CSV also reports spread and confidence intervals and has separate `decid_*` columns for deciduous LAI; we don't use those here.
+#
+# Joining to `scenes.csv` gives **12 rows**, one per matched survey: nine from 2022–2023 and three from 2024. The field and satellite dates don't have to be identical. You have **one** measured LAI value per row, not one per pixel, so summarize each index map over the usable pixels before comparing it with LAI.
 #
 # Find the June and November visits. Do the measured LAI values agree with your impression from the color images?
 
@@ -108,11 +126,13 @@ field = pd.read_csv("lai.csv")
 field = field.loc[field["site"] == "ems", ["date", "n_plots", "all_mean"]]
 field = field.rename(columns={"date": "field_date", "all_mean": "LAI"})
 scenes = pd.read_csv("harvard-forest/scenes.csv")
+# Join on the field survey date, not the optical or radar acquisition date.
 visits = scenes.merge(field, on="field_date", validate="one_to_one")
 display(visits[["field_date", "optical_date", "radar_date", "n_plots", "LAI"]])
 
 def usable_pixels(bands):
-    # Class 4 means vegetation in the Sentinel-2 scene classification.
+    # Keep vegetation (SCL class 4) inside the footprint, then use a shared
+    # mask so that both indices summarize the same pixels on this visit.
     valid = footprint & (bands["SCL"] == 4)
     for band in band_names.values():
         valid &= np.isfinite(bands[band]) & (bands[band] > 0)
@@ -128,21 +148,21 @@ def usable_pixels(bands):
 # The index maps will look roughly semicircular when you mask them. The cyan outline in the source-band plots shows where that shape comes from. Gaps inside it are pixels that fail the vegetation or validity checks.
 
 # %% id="419e17f8"
-# Write your code here.
-# Start with the bands from one visit and check the two index maps.
-# Then build a table with both index summaries and LAI for each visit.
+# TODO: Calculate and plot both index arrays for one visit.
+# TODO: Use the Boolean mask to select the same pixels from both arrays.
+# TODO: Save one median per index per field date, alongside measured LAI.
 
 # %% [markdown] id="e6ed452e"
 # ## 6. Your turn · Fit and test your models
 #
-# 1. Use the **2022–2023** rows to fit a separate line for each index. Use the index as x and measured LAI as y. Estimate the slope and intercept for each line. Hint: `np.polyfit` with degree 1 fits a straight line.
+# 1. On the **2022–2023** rows, make a scatterplot and calculate Pearson's r for each index versus measured LAI. Which has the stronger relationship (larger absolute r), and is it positive or negative? Use these same rows to fit a separate line for each index, with index as x and measured LAI as y. Hint: `np.polyfit` with degree 1 fits a straight line.
 # 2. Use each fitted line to predict LAI from the index values for the three **2024** visits. Put the two predictions and measured LAI side by side for each date.
 # 3. Compare the models' root mean squared errors (RMSE) with a baseline that predicts the 2022–2023 mean LAI for every 2024 visit. Keep the 2024 rows out of the fitting step.
 
 # %% id="4e4a70ff"
-# Write your code here.
-# Split the visits by year, fit two lines, and compare their predictions
-# with measured LAI and the baseline on the three 2024 visits.
+# TODO: Split by field year before calculating correlations or fitting.
+# TODO: Compare the two training correlations and fit one line per index.
+# TODO: Predict the held-out LAI and compare RMSE with the training-mean baseline.
 
 # %% [markdown] id="17e1d259"
 # ## Share your results
