@@ -20,11 +20,10 @@
 # Massachusetts. The scene was acquired on June 11, 2023, in tile **T18TYN**.
 # We read a compact, georeferenced chip around the Harvard Forest EMS tower,
 # decode its stored digital numbers (DN) with the product's radiometric
-# metadata, and view the visible, near-infrared, and shortwave-infrared bands.
+# metadata, and plot all 13 bands, including the atmospheric bands.
 #
 # This notebook is a demonstration, not an exercise. The prepared chip keeps
-# the lesson download small; each of its pixels comes from the full-resolution
-# public Level-1C product.
+# the lesson download small; all imagery comes from the public Level-1C product.
 
 # %% [markdown]
 # ## Acquisition and provenance
@@ -44,11 +43,11 @@
 # [`S2A_18TYN_20230611_0_L1C`](https://earth-search.aws.element84.com/v1/collections/sentinel-2-l1c/items/S2A_18TYN_20230611_0_L1C).
 #
 # Full 10 m JP2 files are roughly 100 MB each. To make this notebook practical
-# to run in Colab, the lesson includes a 2 km × 2 km, six-band GeoTIFF chip.
-# It is cut from these public source bands with Rasterio; the 10 m bands are
-# averaged to the 20 m grid, and the SWIR bands remain at their native 20 m.
-# The chip preserves the source DN values (as floating point where averaging
-# is needed), along with its CRS, transform, band descriptions, and provenance.
+# to run in Colab, the lesson uses GeoTIFF crops around the same 2 km square.
+# The original six-band chip averages the 10 m bands onto a 20 m grid.
+# The additional bands are separate GeoTIFFs at their native 20 m or 60 m
+# spacing. The 60 m crops extend slightly past the display boundary so their
+# native pixels cover the whole square.
 
 # %% [markdown]
 # ## Level-1C, Level-2A, and reflectance
@@ -79,17 +78,24 @@
 # Wavelengths are approximate band-center wavelengths. The 10 m channels have
 # been averaged over aligned 2 × 2 blocks for the shared 20 m chip grid.
 #
-# | Band | Spectral region | Center wavelength | Native resolution | Chip treatment |
+# | Band | Spectral region | Approx. center | Native resolution | What it shows |
 # | --- | --- | ---: | ---: | --- |
-# | B02 | Blue | 490 nm | 10 m | 2 × 2 mean |
-# | B03 | Green | 560 nm | 10 m | 2 × 2 mean |
-# | B04 | Red | 665 nm | 10 m | 2 × 2 mean |
-# | B08 | Broad near-infrared | 833 nm | 10 m | 2 × 2 mean |
-# | B11 | Shortwave infrared 1 | 1614 nm | 20 m | Native grid |
-# | B12 | Shortwave infrared 2 | 2202 nm | 20 m | Native grid |
+# | B01 | Coastal aerosol | 443 nm | 60 m | Sensitive to atmospheric scattering; useful for aerosol correction and coastal water. |
+# | B02 | Blue | 490 nm | 10 m | The blue channel in natural color; sensitive to haze and useful over shallow water. |
+# | B03 | Green | 560 nm | 10 m | Captures the visible green reflectance peak of many plants. |
+# | B04 | Red | 665 nm | 10 m | Chlorophyll absorbs strongly here; this is the red band in NDVI. |
+# | B05 | Red edge 1 | 704 nm | 20 m | Samples the start of the sharp rise from red absorption to near-infrared reflectance. |
+# | B06 | Red edge 2 | 740 nm | 20 m | Samples farther up that rise; helps characterize canopy chlorophyll. |
+# | B07 | Red edge 3 | 783 nm | 20 m | Samples the upper shoulder near the near-infrared plateau. |
+# | B08 | Broad near-infrared | 833 nm | 10 m | Healthy vegetation often reflects strongly here; this is the NIR band in NDVI. |
+# | B8A | Narrow near-infrared | 865 nm | 20 m | Samples a narrower, longer-wavelength part of the near-infrared plateau. |
+# | B09 | Water vapor | 945 nm | 60 m | Samples a water-vapor absorption feature; used to estimate atmospheric water vapor. |
+# | B10 | Cirrus | 1375 nm | 60 m | Water vapor suppresses much of the surface signal, so high cirrus can stand out. Level-2A omits this band. |
+# | B11 | Shortwave infrared 1 | 1614 nm | 20 m | Sensitive to liquid water in plants and soil; useful for moisture mapping. |
+# | B12 | Shortwave infrared 2 | 2202 nm | 20 m | Helps distinguish burned areas, exposed materials, and moisture differences. |
 
 # %%
-%pip -q install rasterio
+%pip -q install rasterio scikit-image
 
 # %%
 from pathlib import Path
@@ -99,12 +105,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
 from rasterio.warp import transform
+from skimage.segmentation import find_boundaries
 
 bands = {
+    "B01": {"name": "Coastal aerosol", "id": "0", "wavelength_nm": 443, "resolution": "60 m"},
     "B02": {"name": "Blue", "id": "1", "wavelength_nm": 490, "resolution": "10 m → 20 m mean"},
     "B03": {"name": "Green", "id": "2", "wavelength_nm": 560, "resolution": "10 m → 20 m mean"},
     "B04": {"name": "Red", "id": "3", "wavelength_nm": 665, "resolution": "10 m → 20 m mean"},
+    "B05": {"name": "Red edge 1", "id": "4", "wavelength_nm": 704, "resolution": "20 m"},
+    "B06": {"name": "Red edge 2", "id": "5", "wavelength_nm": 740, "resolution": "20 m"},
+    "B07": {"name": "Red edge 3", "id": "6", "wavelength_nm": 783, "resolution": "20 m"},
     "B08": {"name": "Broad NIR", "id": "7", "wavelength_nm": 833, "resolution": "10 m → 20 m mean"},
+    "B8A": {"name": "Narrow NIR", "id": "8", "wavelength_nm": 865, "resolution": "20 m"},
+    "B09": {"name": "Water vapor", "id": "9", "wavelength_nm": 945, "resolution": "60 m"},
+    "B10": {"name": "Cirrus", "id": "10", "wavelength_nm": 1375, "resolution": "60 m"},
     "B11": {"name": "SWIR 1", "id": "11", "wavelength_nm": 1614, "resolution": "20 m"},
     "B12": {"name": "SWIR 2", "id": "12", "wavelength_nm": 2202, "resolution": "20 m"},
 }
@@ -114,15 +128,17 @@ band_order = list(bands)
 # ## Download the lesson chip
 #
 # The small archive is served outside GitHub at
-# [vision.csi.miamioh.edu](https://vision.csi.miamioh.edu/data/cse620b/forestry/sentinel-2-l1c-demo.zip).
+# [vision.csi.miamioh.edu](https://vision.csi.miamioh.edu/data/cse620b/forestry/sentinel-2-l1c-all-bands.zip).
 # This cell uses `wget` to retrieve the chip and its matching product XML.
 
 # %%
 %%bash
 set -e
-wget -nv -O sentinel-2-l1c-demo.zip \
-    https://vision.csi.miamioh.edu/data/cse620b/forestry/sentinel-2-l1c-demo.zip
-unzip -oq sentinel-2-l1c-demo.zip -d sentinel-2-l1c-demo
+wget -nv -O sentinel-2-l1c-all-bands.zip \
+    https://vision.csi.miamioh.edu/data/cse620b/forestry/sentinel-2-l1c-all-bands.zip
+unzip -oq sentinel-2-l1c-all-bands.zip -d sentinel-2-l1c-demo
+wget -nv -O sentinel-2-l2a-demo.zip https://vision.csi.miamioh.edu/data/cse620b/forestry/sentinel-2-l2a-demo.zip
+unzip -oq sentinel-2-l2a-demo.zip SCL.tif -d sentinel-2-l2a-demo
 
 # %% [markdown]
 # ## Read the chip and its product metadata
@@ -153,11 +169,15 @@ for element in product_metadata.iter():
 with rasterio.open(chip_path) as chip:
     dn = {
         band: chip.read(index).astype(np.float32)
-        for index, band in enumerate(band_order, start=1)
+        for index, band in enumerate(("B02", "B03", "B04", "B08", "B11", "B12"), start=1)
     }
-    chip_width, chip_height = chip.width, chip.height
     bounds = chip.bounds
     chip_crs = chip.crs
+band_bounds = dict.fromkeys(dn, bounds)
+for band in bands.keys() - dn.keys():
+    with rasterio.open(data_dir / f"{band}.tif") as chip:
+        dn[band] = chip.read(1).astype(np.float32)
+        band_bounds[band] = chip.bounds
 
 no_data = special_values["NODATA"]
 saturated = special_values["SATURATED"]
@@ -171,15 +191,18 @@ toa = {
 }
 
 print(f"Product: {product_id}")
-print(f"Chip: {chip_width} × {chip_height} pixels at 20 m; {chip_crs}")
+print(f"{len(toa)} bands; {chip_crs}")
+for band, image in toa.items():
+    print(f"{band}: {image.shape[0]} rows × {image.shape[1]} columns")
 print(f"Metadata: quantification={quantification}, offsets={sorted(set(add_offsets.values()))}")
 print(f"Special values: {special_values}")
 
 # %% [markdown]
-# The six grayscale panels show blue, green, red, broad NIR, and two SWIR
-# bands over the same 2 km square; the yellow cross marks the tower. Each
-# panel uses its own robust display stretch, so brightness should not be
-# compared numerically between bands. The underlying reflectance is unchanged.
+# All 13 panels show the same 2 km square; the yellow cross marks the tower.
+# Notice the coarser 60 m pixels in the atmospheric bands. Each panel has its
+# own contrast stretch to make spatial patterns visible, even in a band with
+# very little signal. Use the colorbars, not screen brightness, to compare
+# reflectance across bands.
 
 # %%
 extent = (bounds.left, bounds.right, bounds.bottom, bounds.top)
@@ -187,15 +210,19 @@ tower_lon, tower_lat = -72.1715, 42.5378
 tower_x, tower_y = transform("EPSG:4326", chip_crs, [tower_lon], [tower_lat])
 tower_x, tower_y = tower_x[0], tower_y[0]
 
-fig, axes = plt.subplots(2, 3, figsize=(14, 9), constrained_layout=True)
+fig, axes = plt.subplots(4, 4, figsize=(13, 12), constrained_layout=True)
+for ax in axes.flat:
+    ax.set_axis_off()
 for ax, band in zip(axes.flat, band_order):
     image = toa[band]
     low, high = np.nanpercentile(image, (2, 98))
+    left, bottom, right, top = band_bounds[band]
     artist = ax.imshow(
         image,
-        extent=extent,
+        extent=(left, right, bottom, top),
         origin="upper",
         cmap="gray",
+        interpolation="nearest",
         vmin=low,
         vmax=high,
     )
@@ -204,8 +231,7 @@ for ax, band in zip(axes.flat, band_order):
         f'{band} · {bands[band]["name"]} · {bands[band]["wavelength_nm"]} nm\n'
         f'{bands[band]["resolution"]}'
     )
-    ax.set_xlabel("UTM easting (m)")
-    ax.set_ylabel("UTM northing (m)")
+    ax.set(xlim=(bounds.left, bounds.right), ylim=(bounds.bottom, bounds.top))
     fig.colorbar(artist, ax=ax, label="TOA reflectance")
 fig.suptitle("Harvard Forest — individual Sentinel-2 Level-1C bands", fontsize=15)
 plt.show()
@@ -237,6 +263,30 @@ plt.show()
 # top-of-atmosphere reflectance. The NIR and SWIR channels complement visible
 # color because vegetation reflects strongly in NIR while water content and
 # vegetation structure influence the SWIR response.
+
+# %% [markdown]
+# ## Overlay the Level-2A scene classification
+#
+# Level-1C has no SCL of its own. These yellow outlines show where neighboring
+# SCL pixels change class in the matching June 11 Level-2A product. The
+# classification crop covers only the central 1.2 km, so this panel zooms
+# to that overlap. Both layers are drawn in the same UTM coordinates.
+
+# %%
+with rasterio.open("sentinel-2-l2a-demo/SCL.tif") as src:
+    labels = src.read(1)
+    left, bottom, right, top = src.bounds
+    assert src.crs == chip_crs
+edges = find_boundaries(labels, mode="thick")
+
+fig, ax = plt.subplots(figsize=(5, 5), layout="constrained")
+ax.imshow(rgb_display, extent=extent)
+ax.imshow(np.ma.masked_where(~edges, edges), extent=(left, right, bottom, top),
+          cmap="Wistia", vmin=0, vmax=1, interpolation="nearest")
+ax.set(xlim=(left, right), ylim=(bottom, top),
+       title="Level-1C RGB with Level-2A SCL boundaries")
+ax.set_axis_off()
+plt.show()
 
 # %% [markdown]
 # ## Obtaining a different source scene

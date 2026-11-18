@@ -159,7 +159,7 @@
     "demos": [
       {"title": "Sentinel-2 Level-1C: Top-of-atmosphere reflectance", "stem": "demo-sentinel-2-l1c"},
       {"title": "Sentinel-2 Level-2A: Surface reflectance", "stem": "demo-sentinel-2-l2a"},
-      {"title": "Sentinel-1 RTC: VV and VH radar backscatter", "stem": "demo-sentinel-1-rtc"}
+      {"title": "Sentinel-1 RTC: All four radar polarizations", "stem": "demo-sentinel-1-rtc"}
     ],
     "labs": [
       {"title": "In-class activity: Predict leaf area at Harvard Forest", "file": "labs/harvard-forest-lai.html"}

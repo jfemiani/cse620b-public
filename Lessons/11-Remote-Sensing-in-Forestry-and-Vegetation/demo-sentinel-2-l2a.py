@@ -16,7 +16,7 @@
 # Level-1C contains top-of-atmosphere reflectance. Level-2A applies an atmospheric correction to estimate bottom-of-atmosphere (surface) reflectance. This makes Level-2A useful for comparing vegetation across dates, but clouds, shadows, and differences in illumination still matter. Level-2A also includes a scene classification raster (SCL). It does not include B10, the Level-1C cirrus measurement.
 
 # %%
-%pip -q install rasterio
+%pip -q install rasterio scikit-image
 
 # %% [markdown]
 # ## Download the sample
@@ -33,6 +33,7 @@ unzip -oq sentinel-2-l2a-demo.zip -d sentinel-2-l2a-demo
 import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
+from skimage.segmentation import find_boundaries
 
 # %% [markdown]
 # ## What the bands measure
@@ -74,7 +75,26 @@ for band in bands:
 #
 # Natural color assigns B04, B03, and B02 to red, green, and blue. The display stretch brightens the image without changing the reflectance arrays. The reflectance panels all use the same display range (0 to 0.5): compare the relatively dark red band with the brighter NIR bands over vegetation. Values outside this range are clipped in the display only.
 #
-# The SCL colorbar shows only the classes present in this crop. Possible codes are: 0 no data (masked here), 1 saturated or defective, 2 dark features/topographic shadow, 3 cloud shadow, 4 vegetation, 5 non-vegetated, 6 water, 7 unclassified, 8 medium-probability cloud, 9 high-probability cloud, 10 thin cirrus, and 11 snow or ice.
+# ### Scene classification (SCL): all 12 classes
+#
+# SCL is an automated classification for screening pixels, not a land-cover map or a reflectance band. The colorbar shows only the codes present in this crop; this table lists every possible code.
+#
+# | Code | Class | What it means |
+# |---:|---|---|
+# | 0 | No data | No valid observation; masked in the plot. |
+# | 1 | Saturated or defective | The sensor measurement is saturated or otherwise invalid. |
+# | 2 | Topographic cast shadow | Terrain blocks direct sunlight. Older products called this class “dark features/shadows.” |
+# | 3 | Cloud shadow | The pixel is in a shadow cast by a cloud. |
+# | 4 | Vegetation | The algorithm identifies vegetation; the Harvard Forest lab keeps this class. |
+# | 5 | Non-vegetated | Land classified as non-vegetated, such as bare ground. |
+# | 6 | Water | The algorithm identifies a water surface. |
+# | 7 | Unclassified | The algorithm did not assign a more specific class. |
+# | 8 | Medium-probability cloud | The algorithm flags a possible cloud. |
+# | 9 | High-probability cloud | The algorithm flags a more likely cloud. |
+# | 10 | Thin cirrus | The algorithm detects thin, high cloud. |
+# | 11 | Snow or ice | The algorithm identifies snow or ice. |
+#
+# See the [Sentinel Hub SCL reference](https://custom-scripts.sentinel-hub.com/custom-scripts/sentinel-2/scene-classification/) for the class definitions.
 
 # %%
 rgb = np.stack([images[key].filled(0) for key in ("B04", "B03", "B02")], axis=-1)
@@ -96,6 +116,25 @@ for ax, (band, label) in zip(axes.flat, bands.items()):
         reflectance = ax.imshow(values, cmap="gray", vmin=0, vmax=0.5, interpolation="nearest")
     ax.set_title(f"{band} | {label}")
 fig.colorbar(reflectance, ax=list(axes.flat)[:12], shrink=0.7, label="Surface reflectance")
+plt.show()
+
+# %% [markdown]
+# ## Overlay class boundaries on natural color
+#
+# `find_boundaries` marks where neighboring SCL labels differ. Yellow pixels
+# show those transitions, not a particular class. The RGB and SCL crops
+# cover the same rectangle, but SCL pixels are twice as wide. The overlay
+# keeps the categorical edges sharp rather than interpolating them.
+
+# %%
+edges = find_boundaries(images["SCL"].filled(0), mode="thick")
+fig, axes = plt.subplots(1, 2, figsize=(7, 4), layout="constrained")
+for ax, title in zip(axes, ("Natural color", "With SCL boundaries")):
+    ax.imshow(np.clip(rgb / 0.22, 0, 1), extent=(0, 1200, 0, 1200))
+    ax.set_title(title)
+    ax.set_axis_off()
+axes[1].imshow(np.ma.masked_where(~edges, edges), extent=(0, 1200, 0, 1200),
+               cmap="Wistia", vmin=0, vmax=1, interpolation="nearest")
 plt.show()
 
 # %% [markdown]
