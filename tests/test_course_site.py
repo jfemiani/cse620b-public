@@ -100,6 +100,18 @@ class CourseSiteTest(unittest.TestCase):
         self.assertIn(f'href="{activity_link}" data-embed="true"', panels["3"])
         self.assertNotIn(activity_link, panels["0"])
 
+    def test_forestry_lab_exposes_colab_notebook(self):
+        page = ROOT / "pages" / "forestry-and-vegetation.html"
+        lab_panel = page.read_text(encoding="utf-8").split('id="panel-3"', 1)[1]
+        self.assertIn('href="../labs/harvard-forest-lai.html"', lab_panel.split("</section>", 1)[0])
+        lesson = Document(ROOT / "labs" / "harvard-forest-lai.html")
+        notebook = ROOT / "labs" / "harvard-forest-lai.ipynb"
+        self.assertIn(
+            f"https://colab.research.google.com/github/{build.REPOSITORY}/blob/main/{build.url(notebook)}",
+            lesson.links,
+        )
+        self.assertTrue((ROOT / "_site" / "labs" / notebook.name).is_file())
+
     def test_all_notebooks_have_download_and_colab_links(self):
         notebooks = {path.resolve() for path in (ROOT / "Lessons").rglob("*.ipynb")}
         linked = set()

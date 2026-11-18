@@ -156,6 +156,9 @@
     "slides": [
       {"title": "Remote sensing of forests and vegetation", "file": "slides/forestry-and-vegetation.pdf"}
     ],
-    "demos": []
+    "demos": [],
+    "labs": [
+      {"title": "In-class activity: Predict leaf area at Harvard Forest", "file": "labs/harvard-forest-lai.html"}
+    ]
   }
 ]

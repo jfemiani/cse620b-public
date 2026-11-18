@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../assets/notes.css">
+  <title>Harvard Forest: Optical and Radar Indices for LAI</title>
+</head>
+<body>
+  <h1>Can satellite indices track leaf area at Harvard Forest?</h1>
+  <p>In this 25&ndash;30 minute activity, compare multispectral and radar images at Prospect Hill, Massachusetts, with field measurements of leaf area index (LAI).</p>
+  <p><a href="https://colab.research.google.com/github/jfemiani/cse620b-public/blob/main/labs/harvard-forest-lai.ipynb" target="_blank" rel="noopener">Open the Harvard Forest lab in Google Colab</a> or <a href="harvard-forest-lai.ipynb" download>download the notebook</a>.</p>
+  <h2>In class</h2>
+  <ol>
+    <li>Download the aligned Sentinel-2 and Sentinel-1 chips and the Harvard Forest field measurements. Inspect the RGB image and the pixels kept for analysis.</li>
+    <li>Compute optical and radar indices. Compare their correlations with field LAI across the 2022&ndash;2023 site dates.</li>
+    <li>Fit a line for one optical and one radar predictor. Test both on 2024 dates and compare their errors against a training-mean baseline.</li>
+    <li>Explain what the observed relationships tell you about seasonal change at this site, and what they do not tell you about other forests.</li>
+  </ol>
+  <p>The radar time series has VV/VH polarization. The corresponding ratio and difference use those channels, not the HH/HV pair used in some lecture examples. The notebook explains the distinction.</p>
+  <p>The notebook links to the <a href="https://harvardforest1.fas.harvard.edu/exist/apps/datasets/showData.html?id=hf069">Harvard Forest field dataset</a> and worked tutorials for <a href="https://www.forestry-ecological-gis.org/ecological-gis-data-foundations-in-python/vegetation-index-calculation-in-python/calculating-ndvi-from-sentinel-2-with-rasterio/">optical NDVI</a> and <a href="https://github.com/microsoft/PlanetaryComputerExamples/blob/main/tutorials/customizable-rtc-sentinel1.ipynb">terrain-corrected radar</a>.</p>
+</body>
+</html>
